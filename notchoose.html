@@ -182,6 +182,12 @@ main {
   box-shadow: 0 0 0 3px rgba(204,0,0,0.1);
 }
 
+.input-line:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  color: #666;
+}
+
 .input-line::placeholder {
   color: #999;
 }
@@ -271,95 +277,6 @@ textarea.input-line {
   font-weight: 600;
   color: #856404;
   font-size: 16px;
-}
-
-/* ===== Dropdown ===== */
-.dropdown {
-  position: relative;
-  width: 100%;
-}
-
-.dropdown-btn {
-  width: 100%;
-  padding: 12px 14px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-  color: var(--text-dark);
-  font-size: 15px;
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  min-height: 48px;
-  align-items: center;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.dropdown-btn::after {
-  content: "▼";
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: #666;
-}
-
-.dropdown-btn:hover {
-  border-color: var(--primary-color);
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #fff;
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  z-index: 10;
-  width: 100%;
-  max-height: 250px;
-  overflow-y: auto;
-  padding: 8px;
-  margin-top: 4px;
-}
-
-.dropdown-content label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  font-weight: 400;
-}
-
-.dropdown-content label:hover { 
-  background: var(--primary-light);
-}
-
-.dropdown-content input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--primary-color);
-}
-
-.selected-name {
-  background: var(--primary-color);
-  color: #fff;
-  border-radius: 16px;
-  padding: 4px 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* ===== Buttons ===== */
@@ -811,6 +728,7 @@ footer {
     
     <form id="eventForm">
       <input type="hidden" id="eventId">
+      <input type="hidden" id="assignedByValue">
 
       <div class="form-group">
         <label>📝 หมายเลขงาน:</label>
@@ -820,10 +738,8 @@ footer {
 
       <div class="form-group">
         <label>👤 คนที่สั่งงาน: <span class="required">*</span></label>
-        <div class="dropdown">
-          <button type="button" class="dropdown-btn" id="assignedByBtn">เลือกชื่อ</button>
-          <div class="dropdown-content" id="assignedByList"></div>
-        </div>
+        <input type="text" id="assignedByDisplay" class="input-line" placeholder="กำลังโหลดข้อมูล..." disabled>
+        <div class="help-text">ชื่อจะถูกดึงจาก URL อัตโนมัติ</div>
       </div>
 
       <div class="form-group">
@@ -952,8 +868,22 @@ document.getElementById("orderDate").value = today;
 
 const eventList = document.getElementById("eventList");
 const completedEventList = document.getElementById("completedEventList");
-const assignedByBtn = document.getElementById("assignedByBtn");
-const assignedByList = document.getElementById("assignedByList");
+
+// ✅ ดึงชื่อจาก URL
+function getNameFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let nameFromURL = urlParams.get('name');
+  
+  if (nameFromURL) {
+    nameFromURL = nameFromURL.trim().normalize('NFC');
+    document.getElementById("assignedByDisplay").value = nameFromURL;
+    document.getElementById("assignedByValue").value = nameFromURL;
+    console.log("✅ ดึงชื่อจาก URL สำเร็จ:", nameFromURL);
+  } else {
+    document.getElementById("assignedByDisplay").value = "ไม่พบชื่อใน URL";
+    console.warn("⚠️ ไม่พบ parameter 'name' ใน URL");
+  }
+}
 
 async function loadEvents() {
   eventList.innerHTML = "";
@@ -1122,8 +1052,6 @@ window.editEvent = async id => {
     return;
   }
 
-  await loadNames();
-
   document.getElementById("eventId").value = id;
   document.getElementById("jobNumber").value = data.jobNumber || "";
   document.getElementById("location").value = data.location;
@@ -1134,6 +1062,13 @@ window.editEvent = async id => {
   document.getElementById("contactPerson").value = data.contactPerson || "";
   document.getElementById("phoneNumber").value = data.phoneNumber || "";
   document.getElementById("urgentJob").checked = data.isUrgent || false;
+
+  // ✅ แสดงชื่อคนสั่งงาน
+  if (data.assigners && data.assigners.length > 0) {
+    const assignerName = Array.isArray(data.assigners) ? data.assigners[0] : data.assigners;
+    document.getElementById("assignedByDisplay").value = assignerName;
+    document.getElementById("assignedByValue").value = assignerName;
+  }
 
   document.querySelectorAll("#jobTypeGroup input[type=checkbox]").forEach(cb => cb.checked = false);
   document.getElementById("otherJobTypeText").value = "";
@@ -1149,15 +1084,6 @@ window.editEvent = async id => {
     }
   }
 
-  assignedByList.querySelectorAll("input[type=checkbox]").forEach(cb => {
-    if ((data.assigners || []).includes(cb.value)) {
-      cb.checked = true;
-      cb.disabled = false;
-      cb.parentElement.style.opacity = 1;
-    }
-  });
-
-  updateDropdownButton(assignedByList, assignedByBtn);
   document.getElementById("formTitle").innerText = "✏️ แก้ไขงาน";
   
   // Scroll to form
@@ -1175,11 +1101,11 @@ document.getElementById("eventForm").addEventListener("submit", async e => {
   const end = document.getElementById("end").value;
   const contactPerson = document.getElementById("contactPerson").value.trim();
   const phoneNumber = document.getElementById("phoneNumber").value.trim();
-  const assigners = Array.from(assignedByList.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
+  const assignerName = document.getElementById("assignedByValue").value;
   const isUrgent = document.getElementById("urgentJob").checked;
 
-  if (assigners.length === 0) {
-    alert("⚠️ กรุณาเลือกคนที่สั่งงานอย่างน้อย 1 คน");
+  if (!assignerName) {
+    alert("⚠️ ไม่พบชื่อคนสั่งงาน กรุณาตรวจสอบ URL");
     return;
   }
 
@@ -1220,7 +1146,7 @@ document.getElementById("eventForm").addEventListener("submit", async e => {
       orderDate, 
       start, 
       end, 
-      assigners, 
+      assigners: [assignerName], // ✅ เก็บเป็น array ตามโครงสร้างเดิม
       jobTypes, 
       contactPerson, 
       phoneNumber,
@@ -1250,66 +1176,15 @@ document.getElementById("eventForm").addEventListener("submit", async e => {
   }
 });
 
-function updateDropdownButton(listEl, btnEl){
-  const selected = Array.from(listEl.querySelectorAll("input[type=checkbox]:checked")).map(cb=>cb.value);
-  btnEl.innerHTML = selected.map(n=>`<span class="selected-name">${n}</span>`).join(" ") || "เลือกชื่อ";
-}
-
-assignedByBtn.addEventListener("click", (e)=> {
-  e.stopPropagation();
-  assignedByList.style.display = assignedByList.style.display==="block"?"none":"block";
-});
-
-assignedByList.addEventListener("change", () => {
-  updateDropdownButton(assignedByList, assignedByBtn);
-  assignedByList.style.display = "none";
-});
-
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".dropdown")) {
-    assignedByList.style.display = "none";
-  }
-});
-
-async function loadNames() {
-  assignedByList.innerHTML = "";
-
-  const usersRef = ref(db, "users");
-  const snapshot = await get(usersRef);
-  
-  if (!snapshot.exists()) return;
-  
-  const users = snapshot.val();
-  Object.keys(users).forEach(userId => {
-    const user = users[userId];
-    if (user.position === "sales") {
-      const name = user.name;
-      assignedByList.innerHTML += `
-        <label>
-          <span>${name}</span>
-          <input type="checkbox" value="${name}">
-        </label>`;
-    }
-  });
-
-  updateDropdownButton(assignedByList, assignedByBtn);
-}
-
+// ✅ เรียกใช้ฟังก์ชันเมื่อโหลดหน้า
 loadEvents();
-loadNames();
+getNameFromURL();
 
-function loadNameFromURL() {
-  const urlParams = new URLSearchParams(window.location.search);
-  let nameFromURL = urlParams.get('name');
-  
-  // Session storage checks
+// ✅ ตรวจสอบการ login
 const userId = sessionStorage.getItem("userId");
 const userName = sessionStorage.getItem("userName");
-const userPosition = sessionStorage.getItem("userPosition");
 
-// ✅ เพิ่มโค้ดตรงนี้ - ตรวจสอบการ login
 if (!userId || !userName) {
-  // สร้าง custom alert
   const overlay = document.createElement('div');
   overlay.className = 'custom-alert-overlay';
   
@@ -1330,45 +1205,7 @@ if (!userId || !userName) {
   setTimeout(() => {
     window.location.href = 'index.html';
   }, 3000);
-  
-  throw new Error('Not logged in');
 }
-
-  if (!nameFromURL) return;
-  
-  nameFromURL = nameFromURL.trim().normalize('NFC');
-  
-  const selectName = () => {
-    const checkboxes = assignedByList.querySelectorAll('input[type="checkbox"]');
-    
-    if (checkboxes.length === 0) return false;
-    
-    let found = false;
-    checkboxes.forEach(cb => {
-      const cbValue = cb.value.trim().normalize('NFC');
-      if (cbValue === nameFromURL) {
-        cb.checked = true;
-        found = true;
-      }
-    });
-    
-    if (found) {
-      updateDropdownButton(assignedByList, assignedByBtn);
-    }
-    
-    return found;
-  };
-  
-  setTimeout(selectName, 1000);
-  setTimeout(selectName, 1500);
-  setTimeout(selectName, 2000);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(loadNameFromURL, 100);
-});
-
-loadNameFromURL();
 
 document.querySelectorAll('#jobTypeGroup input[type="checkbox"]').forEach(cb => {
   cb.addEventListener('change', () => {
@@ -1422,7 +1259,7 @@ function saveFormToLocalStorage() {
     end: document.getElementById("end").value,
     contactPerson: document.getElementById("contactPerson").value.trim(),
     phoneNumber: document.getElementById("phoneNumber").value.trim(),
-    assigners: Array.from(assignedByList.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value),
+    assignedBy: document.getElementById("assignedByValue").value,
     jobTypes: Array.from(document.querySelectorAll('#jobTypeGroup input[type="checkbox"]:checked')).map(cb => cb.value),
     otherJobTypeText: document.getElementById("otherJobTypeText").value.trim(),
     isUrgent: document.getElementById("urgentJob").checked
@@ -1442,7 +1279,7 @@ function loadFormFromLocalStorage() {
   document.getElementById("end").value = saved.end || "";
   document.getElementById("contactPerson").value = saved.contactPerson || "";
   document.getElementById("phoneNumber").value = saved.phoneNumber || "";
-  document.getElementById("urgentJob").checked = saved.isUrgent || false; 
+  document.getElementById("urgentJob").checked = saved.isUrgent || false;
 
   document.querySelectorAll('#jobTypeGroup input[type="checkbox"]').forEach(cb => {
     cb.checked = saved.jobTypes?.includes(cb.value) || false;
@@ -1451,11 +1288,6 @@ function loadFormFromLocalStorage() {
     document.getElementById("otherJobTypeCheck").checked = true;
     document.getElementById("otherJobTypeText").value = saved.otherJobTypeText;
   }
-
-  assignedByList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.checked = saved.assigners?.includes(cb.value) || false;
-  });
-  updateDropdownButton(assignedByList, assignedByBtn);
 }
 
 document.querySelectorAll('#eventForm input, #eventForm textarea').forEach(el => {
@@ -1470,7 +1302,6 @@ window.addEventListener('DOMContentLoaded', loadFormFromLocalStorage);
 async function clearFormAfterSave() {
   localStorage.removeItem("eventFormData");
   localStorage.removeItem("savedJobTypes");
-  localStorage.removeItem("selectedAssigners");
 
   const form = document.getElementById("eventForm");
   form.reset();
@@ -1479,38 +1310,15 @@ async function clearFormAfterSave() {
   document.getElementById("otherJobTypeText").value = "";
 
   document.querySelectorAll("#jobTypeGroup input[type=checkbox]").forEach(cb => cb.checked = false);
-  document.querySelectorAll(".dropdown-content input[type=checkbox]").forEach(cb => cb.checked = false);
 
-  document.getElementById("assignedByBtn").innerText = "เลือกชื่อ";
   document.getElementById("formTitle").innerText = "✨ เพิ่มงานใหม่";
   
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("orderDate").value = today;
+  
+  // ✅ โหลดชื่อจาก URL อีกครั้งหลังจาก reset
+  getNameFromURL();
 }
-
-function saveNamesSelection() {
-  const selectedAssigners = Array.from(assignedByList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-  localStorage.setItem("selectedAssigners", JSON.stringify(selectedAssigners));
-}
-
-function loadNamesSelection() {
-  const savedAssigners = JSON.parse(localStorage.getItem("selectedAssigners") || "[]");
-
-  assignedByList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.checked = savedAssigners.includes(cb.value);
-  });
-
-  updateDropdownButton(assignedByList, assignedByBtn);
-}
-
-assignedByList.addEventListener('change', () => {
-  saveNamesSelection();
-  updateDropdownButton(assignedByList, assignedByBtn);
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(loadNamesSelection, 1000);
-});
 
 function goToReportPage(page) {
   const jobNumber = document.getElementById("jobNumber").value.trim() || "ไม่ระบุ";
