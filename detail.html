@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ข้อมูลเบื้องต้นการติดตั้งและส่งมอบ (รายละเอียด)</title>
+<style>
+body {
+  font-family: "TH SarabunPSK", sans-serif;
+  font-size: 14px;
+  margin: 40px;
+  color: #000;
+}
+h3 {
+  text-align: center;
+  margin-bottom: 0;
+}
+p.right {
+  text-align: right;
+  margin-top: 5px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 15px;
+}
+th, td {
+  border: 1px solid #000;
+  padding: 5px 6px;
+  vertical-align: top;
+}
+th {
+  text-align: center;
+  background: #f5f5f5;
+}
+input[type="text"], textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 1px dotted #000;
+  font-size: 14px;
+  font-family: "TH SarabunPSK", sans-serif;
+  outline: none;
+  background: transparent;
+}
+textarea {
+  resize: none;
+  height: 60px;
+}
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 4px;
+}
+.status {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 15px;
+  color: green;
+}
+.btnH {
+  display: inline-block;
+  background: #c00;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+.btnH:hover { background: #a00; }
+</style>
+<div>
+    <a href="home.html" class="btnH">กลับไปหน้าปฏิทิน</a>
+</div>
+</head>
+<body>
+
+<p class="right">
+  เอกสารแนบใบสั่งงาน<br>
+  ฝ่ายวิศวกรรมและฝึกอบรม
+</p>
+
+<h3>ข้อมูลเบื้องต้นการติดตั้งและส่งมอบ (รายละเอียด)</h3><br><br>
+
+<div style="margin-bottom:20px;">
+  <label>เลขที่งาน (Job Number): </label>
+  <input type="text" id="jobNumberInput" readonly>
+</div>
+
+<table>
+  <tr>
+    <th>แผนดำเนินการ</th>
+    <th>วันที่</th>
+    <th>เวลา</th>
+  </tr>
+  <tr><td>ออกเดินทางจาก Office</td><td><input type="text" id="startDateInput" readonly></td><td><input type="text" id="time1" readonly></td></tr>
+  <tr><td>เข้าติดตั้งชุดฝึก</td><td><input type="text" id="date2" readonly></td><td><input type="text" id="time2" readonly></td></tr>
+  <tr><td>ส่งมอบชุดฝึก</td><td><input type="text" id="date3" readonly></td><td><input type="text" id="time3" readonly></td></tr>
+  <tr><td>เดินทางกลับ Office</td><td><input type="text" id="endDateInput" readonly></td><td><input type="text" id="time4" readonly></td></tr>
+</table>
+
+<table>
+  <tr>
+    <td>แผนการเดินทาง</td>
+    <td><label><input type="checkbox" id="car_company" disabled> รถบริษัท</label></td>
+    <td><label><input type="checkbox" id="car_sales" disabled> รถ Sales</label></td>
+    <td><label><input type="checkbox" id="bus" disabled> รถประจำทาง</label></td>
+    <td><label><input type="checkbox" id="plane" disabled> เครื่องบิน</label></td>
+  </tr>
+  <tr>
+    <td>Sales ไปด้วยหรือไม่:</td>
+    <td><label><input type="checkbox" id="sales_no" disabled> ไม่ไป</label></td>
+    <td><label><input type="checkbox" id="sales_yes" disabled> ไป</label></td>
+    <td><label><input type="checkbox" id="sales_together" disabled> ไปด้วยกัน</label></td>
+    <td><label><input type="checkbox" id="sales_separate" disabled> แยกกันไป</label></td>
+  </tr>
+</table>
+
+<table>
+  <tr><th>ลำดับที่</th><th>รายการชุดฝึกและอุปกรณ์ที่จะทำการส่งมอบ</th><th>จำนวน</th></tr>
+  <tr><td>1</td><td><textarea id="item1" readonly></textarea></td><td><input type="text" id="qty1" readonly></td></tr>
+  <tr><td>2</td><td><textarea id="item2" readonly></textarea></td><td><input type="text" id="qty2" readonly></td></tr>
+  <tr><td>3</td><td><textarea id="item3" readonly></textarea></td><td><input type="text" id="qty3" readonly></td></tr>
+  <tr><td>4</td><td><textarea id="item4" readonly></textarea></td><td><input type="text" id="qty4" readonly></td></tr>
+  <tr><td>5</td><td><textarea id="item5" readonly></textarea></td><td><input type="text" id="qty5" readonly></td></tr>
+</table>
+
+<table>
+  <tr><th colspan="3">รูปแบบการขนย้าย</th></tr>
+  <tr>
+    <td><label><input type="checkbox" id="move_all_top" disabled> จ้างย้ายทั้งหมด</label></td>
+    <td><label><input type="checkbox" id="move_all_bottom" disabled> ขนย้ายเองทั้งหมด</label></td>
+    <td><label><input type="checkbox" id="move_partial" disabled> จ้างขนย้ายบางส่วน และ ขนไปเองบางส่วน</label></td>
+  </tr>
+</table>
+
+<table>
+  <tr><th>รายการ</th><th>จำนวน</th></tr>
+  <tr><td><textarea id="carry1" readonly></textarea></td><td><input type="text" id="carryQty1" readonly></td></tr>
+  <tr><td><textarea id="carry2" readonly></textarea></td><td><input type="text" id="carryQty2" readonly></td></tr>
+  <tr><td><textarea id="carry3" readonly></textarea></td><td><input type="text" id="carryQty3" readonly></td></tr>
+</table>
+
+<table>
+  <tr><th>ห้องที่ทำการติดตั้งชุดฝึกอยู่ตึกไหน (แผนที่)...</th></tr>
+  <tr><td><textarea id="roomInfo" readonly></textarea></td></tr>
+  <tr><th>ต้องมีการติดตั้งอุปกรณ์ใดเพิ่มเติมอีกหรือไม่...</th></tr>
+  <tr><td><textarea id="extraEquip" readonly></textarea></td></tr>
+</table>
+
+<div id="statusMsg" class="status"></div>
+
+<!-- ===== Firebase Realtime Database Script ===== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const params = new URLSearchParams(window.location.search);
+  const jobNumber = params.get("jobNumber");
+  const start = params.get("start") || "";
+  const end = params.get("end") || "";
+
+  document.getElementById("jobNumberInput").value = jobNumber || "";
+  document.getElementById("startDateInput").value = start;
+  document.getElementById("endDateInput").value = end;
+
+  async function loadData() {
+    if (!jobNumber) {
+      document.getElementById("statusMsg").textContent = "⚠️ ไม่พบหมายเลขงาน";
+      return;
+    }
+
+    try {
+      // ✅ ดึงข้อมูลจาก report_send ใน Realtime Database
+      const reportSendRef = ref(db, 'report/report_send');
+      const snapshot = await get(reportSendRef);
+
+      if (!snapshot.exists()) {
+        document.getElementById("statusMsg").textContent = "❌ ไม่พบข้อมูลใน report_send กำลังเปิดหน้า seereport2.html...";
+        setTimeout(() => {
+          window.location.href = `seereport2.html?jobNumber=${encodeURIComponent(jobNumber)}`;
+        }, 1500);
+        return;
+      }
+
+      // ค้นหาข้อมูลที่ตรงกับ jobNumber
+      let data = null;
+      snapshot.forEach((childSnapshot) => {
+        const item = childSnapshot.val();
+        if (item.jobNumber === jobNumber) {
+          data = item;
+        }
+      });
+
+      // ❌ ถ้าไม่พบข้อมูล → เปิด seereport2.html
+      if (!data) {
+        document.getElementById("statusMsg").textContent = "❌ ไม่พบข้อมูลงานนี้ใน report_send กำลังเปิดหน้า seereport2.html...";
+        setTimeout(() => {
+          window.location.href = `seereport2.html?jobNumber=${encodeURIComponent(jobNumber)}`;
+        }, 1500);
+        return;
+      }
+
+      // ✅ ถ้ามีข้อมูล → แสดงข้อมูล
+      ["date1","time1","date2","time2","date3","time3","date4","time4"].forEach(id=>{
+        const element = document.getElementById(id);
+        if (element) element.value = data[id] || "";
+      });
+
+      ["car_company","car_sales","bus","plane",
+       "sales_no","sales_yes","sales_together","sales_separate",
+       "move_all_top","move_all_bottom","move_partial"].forEach(id=>{
+        const element = document.getElementById(id);
+        if (element) element.checked = !!data[id];
+      });
+
+      if (data.items) {
+        // Handle both array and object formats
+        const itemsArray = Array.isArray(data.items) ? data.items : Object.values(data.items);
+        itemsArray.forEach((item, i) => {
+          const itemElement = document.getElementById(`item${i+1}`);
+          const qtyElement = document.getElementById(`qty${i+1}`);
+          if (itemElement) itemElement.value = item.name || "";
+          if (qtyElement) qtyElement.value = item.qty || "";
+        });
+      }
+
+      if (data.carry) {
+        // Handle both array and object formats
+        const carryArray = Array.isArray(data.carry) ? data.carry : Object.values(data.carry);
+        carryArray.forEach((item, i) => {
+          const carryElement = document.getElementById(`carry${i+1}`);
+          const qtyElement = document.getElementById(`carryQty${i+1}`);
+          if (carryElement) carryElement.value = item.item || "";
+          if (qtyElement) qtyElement.value = item.qty || "";
+        });
+      }
+
+      const roomInfoElement = document.getElementById("roomInfo");
+      if (roomInfoElement) roomInfoElement.value = data.roomInfo || "";
+
+      const extraEquipElement = document.getElementById("extraEquip");
+      if (extraEquipElement) extraEquipElement.value = data.extraEquip || "";
+
+      document.getElementById("statusMsg").textContent = "✅ โหลดข้อมูลสำเร็จจาก report_send";
+
+    } catch (err) {
+      document.getElementById("statusMsg").textContent = "❌ เกิดข้อผิดพลาด: " + err.message;
+      console.error(err);
+    }
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>

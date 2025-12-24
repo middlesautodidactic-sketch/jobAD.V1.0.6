@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เข้าสู่ระบบ | AUTODIDACTIC</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(135deg, #c00 0%, #800 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-container {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo h3 {
+  color: #c00;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.logo p {
+  color: #666;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: #c00;
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.btn-login {
+  width: 100%;
+  padding: 15px;
+  background: #c00;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.btn-login:hover {
+  background: #a00;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(204, 0, 0, 0.3);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}
+
+.btn-login:disabled {
+  background: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.message {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  display: none;
+}
+
+.message.error {
+  background: #fee;
+  color: #c00;
+  border: 1px solid #fcc;
+}
+
+.message.success {
+  background: #efe;
+  color: #0a0;
+  border: 1px solid #cfc;
+}
+
+.loading {
+  display: none;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.loading-spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #c00;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #666;
+  font-size: 13px;
+}
+
+.password-toggle {
+  position: relative;
+}
+
+.password-toggle .toggle-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+}
+
+.password-toggle .toggle-btn:hover {
+  color: #c00;
+}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="logo">
+    <img src="ad_logo-Photoroom.png" alt="AUTODIDACTIC Logo" style="width: 80px; height: auto; margin-bottom: 10px;">
+    <h3>AUTODIDACTIC</h3>
+    <h2>ระบบจัดการงานวิศวกรรม</h2>
+  </div>
+
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="userId">รหัสพนักงาน</label>
+      <input 
+        type="text" 
+        id="userId" 
+        class="input-field" 
+        placeholder="กรุณากรอกรหัสพนักงาน"
+        required
+        autocomplete="username"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="password">รหัสผ่าน</label>
+      <div class="password-toggle">
+        <input 
+          type="password" 
+          id="password" 
+          class="input-field" 
+          placeholder="กรุณากรอกรหัสผ่าน"
+          required
+          autocomplete="current-password"
+        >
+        <button type="button" class="toggle-btn" id="togglePassword">👁️</button>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-login" id="loginBtn">
+      เข้าสู่ระบบ
+    </button>
+
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <p style="margin-top: 10px; color: #666;">กำลังตรวจสอบข้อมูล...</p>
+    </div>
+
+    <div class="message" id="message"></div>
+  </form>
+
+  <div class="footer">
+    © 2025 AUTODIDACTIC SYSTEM
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Elements
+const loginForm = document.getElementById("loginForm");
+const userIdInput = document.getElementById("userId");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const loading = document.getElementById("loading");
+const message = document.getElementById("message");
+const togglePasswordBtn = document.getElementById("togglePassword");
+
+// Toggle password visibility
+togglePasswordBtn.addEventListener("click", () => {
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+  togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
+});
+
+// Show message
+function showMessage(text, type) {
+  message.textContent = text;
+  message.className = `message ${type}`;
+  message.style.display = "block";
+  
+  setTimeout(() => {
+    message.style.display = "none";
+  }, 5000);
+}
+
+// ✅ ฟังก์ชันดึง IP Address จากเครื่อง (Local IP)
+async function getIPAddress() {
+  try {
+    // สร้าง RTCPeerConnection เพื่อดึง Local IP
+    const pc = new RTCPeerConnection({
+      iceServers: []
+    });
+    
+    pc.createDataChannel('');
+    
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    
+    return new Promise((resolve) => {
+      pc.onicecandidate = (ice) => {
+        if (!ice || !ice.candidate || !ice.candidate.candidate) {
+          resolve("Unknown");
+          return;
+        }
+        
+        const candidateStr = ice.candidate.candidate;
+        const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+        const ipMatch = ipRegex.exec(candidateStr);
+        
+        if (ipMatch && ipMatch[1]) {
+          pc.close();
+          resolve(ipMatch[1]);
+        }
+      };
+      
+      // Timeout หากไม่เจอ IP ภายใน 2 วินาที
+      setTimeout(() => {
+        pc.close();
+        resolve("Unknown");
+      }, 2000);
+    });
+    
+  } catch (error) {
+    console.error("Error getting IP:", error);
+    return "Unknown";
+  }
+}
+
+// ✅ ฟังก์ชันดึงข้อมูล Browser และ Device
+function getDeviceInfo() {
+  const userAgent = navigator.userAgent;
+  let browserName = "Unknown";
+  let osName = "Unknown";
+  
+  // ตรวจสอบ Browser
+  if (userAgent.indexOf("Firefox") > -1) {
+    browserName = "Firefox";
+  } else if (userAgent.indexOf("Chrome") > -1) {
+    browserName = "Chrome";
+  } else if (userAgent.indexOf("Safari") > -1) {
+    browserName = "Safari";
+  } else if (userAgent.indexOf("Edge") > -1) {
+    browserName = "Edge";
+  }
+  
+  // ตรวจสอบ OS
+  if (userAgent.indexOf("Win") > -1) {
+    osName = "Windows";
+  } else if (userAgent.indexOf("Mac") > -1) {
+    osName = "MacOS";
+  } else if (userAgent.indexOf("Linux") > -1) {
+    osName = "Linux";
+  } else if (userAgent.indexOf("Android") > -1) {
+    osName = "Android";
+  } else if (userAgent.indexOf("iOS") > -1) {
+    osName = "iOS";
+  }
+  
+  return {
+    browser: browserName,
+    os: osName,
+    userAgent: userAgent
+  };
+}
+
+// ✅ ฟังก์ชันบันทึก Login Log
+async function saveLoginLog(userId, userName, userPosition, status, ipAddress) {
+  try {
+    const loginLogsRef = ref(db, "login_logs");
+    const newLogRef = push(loginLogsRef);
+    
+    const deviceInfo = getDeviceInfo();
+    const timestamp = new Date().toISOString();
+    const timestampThai = new Date().toLocaleString('th-TH', { 
+      timeZone: 'Asia/Bangkok',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
+    const logData = {
+      userId: userId,
+      userName: userName,
+      position: userPosition,
+      status: status, // "success" หรือ "failed"
+      ipAddress: ipAddress,
+      browser: deviceInfo.browser,
+      os: deviceInfo.os,
+      userAgent: deviceInfo.userAgent,
+      timestamp: timestamp,
+      timestampThai: timestampThai,
+      loginDate: new Date().toLocaleDateString('th-TH'),
+      loginTime: new Date().toLocaleTimeString('th-TH')
+    };
+    
+    await set(newLogRef, logData);
+    console.log("✅ Login log saved successfully:", logData);
+    
+  } catch (error) {
+    console.error("❌ Error saving login log:", error);
+  }
+}
+
+// Login function
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  console.log("=== LOGIN STARTED ===");
+  
+  const userId = userIdInput.value.trim();
+  const password = passwordInput.value.trim();
+  
+  console.log("Input userId:", userId);
+  
+  if (!userId || !password) {
+    showMessage("กรุณากรอกข้อมูลให้ครบถ้วน", "error");
+    return;
+  }
+  
+  // Show loading
+  loginBtn.disabled = true;
+  loading.style.display = "block";
+  message.style.display = "none";
+  
+  // ✅ ดึง IP Address
+  const ipAddress = await getIPAddress();
+  console.log("IP Address:", ipAddress);
+  
+  try {
+    console.log("Fetching users from Firebase...");
+    
+    // Get all users from database
+    const usersRef = ref(db, "users");
+    const snapshot = await get(usersRef);
+    
+    if (!snapshot.exists()) {
+      console.log("No users found in database");
+      showMessage("ไม่พบข้อมูลผู้ใช้ในระบบ", "error");
+      loginBtn.disabled = false;
+      loading.style.display = "none";
+      return;
+    }
+    
+    const usersData = snapshot.val();
+    console.log("All users data:", usersData);
+    
+    let foundUser = null;
+    let foundUserKey = null;
+    
+    // แปลงเป็นตัวพิมพ์เล็กเพื่อเปรียบเทียบ (case-insensitive)
+    const userIdLower = userId.toLowerCase();
+    const passwordLower = password.toLowerCase();
+    
+    // Search for user with matching userId and password
+    for (const key in usersData) {
+      const user = usersData[key];
+      const dbUserIdLower = (user.userId || "").toLowerCase();
+      const dbPasswordLower = (user.password || "").toLowerCase();
+      
+      // เปรียบเทียบแบบไม่สนใจตัวพิมพ์ใหญ่-เล็ก
+      if (dbUserIdLower === userIdLower && dbPasswordLower === passwordLower) {
+        foundUser = user;
+        foundUserKey = key;
+        break;
+      }
+    }
+    
+    if (!foundUser) {
+      console.log("User not found or incorrect password");
+      
+      // ✅ บันทึก Login Failed
+      await saveLoginLog(
+        userId,
+        "Unknown",
+        "Unknown",
+        "failed",
+        ipAddress
+      );
+      
+      showMessage("รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง", "error");
+      loginBtn.disabled = false;
+      loading.style.display = "none";
+      return;
+    }
+    
+    console.log("=== USER FOUND ===");
+    console.log("Found user data:", foundUser);
+    console.log("User key:", foundUserKey);
+    
+    // ✅ บันทึก Login Success
+    await saveLoginLog(
+      foundUserKey,
+      foundUser.name || "ไม่ระบุชื่อ",
+      foundUser.position || "ไม่ระบุตำแหน่ง",
+      "success",
+      ipAddress
+    );
+    
+    // Login successful - store user info in sessionStorage
+    sessionStorage.setItem("userId", foundUserKey);
+    sessionStorage.setItem("userName", foundUser.name || "ไม่ระบุชื่อ");
+    sessionStorage.setItem("userPosition", foundUser.position || "ไม่ระบุตำแหน่ง");
+    sessionStorage.setItem("originalEventId", foundUserKey);
+    sessionStorage.setItem("userIP", ipAddress); // ✅ เก็บ IP ใน session
+    
+    showMessage(`ยินดีต้อนรับ ${foundUser.name || "ผู้ใช้"}`, "success");
+    
+    console.log("Position:", foundUser.position);
+    
+    // Redirect based on position
+    setTimeout(() => {
+      let targetUrl = '';
+      
+      if (foundUser.position === "engineer") {
+        targetUrl = `home.html?originalEventId=${foundUserKey}`;
+      } else if (foundUser.position === "sales") {
+        targetUrl = `calendar_admin.html?originalEventId=${foundUserKey}`;
+      } else if (foundUser.position === "managersales") {
+        targetUrl = `manager.html?originalEventId=${foundUserKey}`;
+      } else if (foundUser.position === "manager") {
+        targetUrl = `manager.html?originalEventId=${foundUserKey}`;
+      } else if (foundUser.position === "admin") {
+        targetUrl = `calendar_admin.html?originalEventId=${foundUserKey}`;
+      } else {
+        console.log("Unknown position:", foundUser.position);
+        showMessage("ไม่พบสิทธิ์การเข้าใช้งาน", "error");
+        loginBtn.disabled = false;
+        loading.style.display = "none";
+        return;
+      }
+      
+      console.log("Redirecting to:", targetUrl);
+      window.location.href = targetUrl;
+    }, 1000);
+    
+  } catch (error) {
+    console.error("Login error:", error);
+    showMessage("เกิดข้อผิดพลาดในการเข้าสู่ระบบ: " + error.message, "error");
+    loginBtn.disabled = false;
+    loading.style.display = "none";
+  }
+});
+
+// Auto focus on userId field
+userIdInput.focus();
+
+// Enter key support
+passwordInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    loginForm.dispatchEvent(new Event("submit"));
+  }
+});
+
+console.log("Login page loaded successfully");
+</script>
+
+</body>
+</html>

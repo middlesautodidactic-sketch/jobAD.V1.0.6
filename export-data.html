@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>💾 Backup Firestore Database - Complete</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Prompt', sans-serif;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  min-height: 100vh;
+}
+
+.container {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 {
+  color: #1e3c72;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.info-box {
+  background: #e3f2fd;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 5px solid #2196f3;
+  margin: 20px 0;
+}
+
+.info-box h3 {
+  margin-top: 0;
+  color: #1976d2;
+}
+
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.collection-item {
+  background: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collection-item .icon {
+  color: #2196f3;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 30px 0;
+}
+
+button {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  border: none;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(30, 60, 114, 0.4);
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button .icon {
+  font-size: 32px;
+}
+
+button .label {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.log-box {
+  background: #1e1e1e;
+  color: #0f0;
+  padding: 20px;
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  max-height: 500px;
+  overflow-y: auto;
+  margin-top: 20px;
+  display: none;
+  line-height: 1.6;
+}
+
+.log-box.active {
+  display: block;
+}
+
+.progress {
+  background: #e9ecef;
+  border-radius: 10px;
+  height: 35px;
+  margin: 20px 0;
+  overflow: hidden;
+  display: none;
+}
+
+.progress.active {
+  display: block;
+}
+
+.progress-bar {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 5px solid #28a745;
+  margin: 20px 0;
+  display: none;
+}
+
+.success.active {
+  display: block;
+}
+
+.success h3 {
+  margin-top: 0;
+  color: #155724;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+  display: none;
+}
+
+.stats.active {
+  display: grid;
+}
+
+.stat-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  border: 2px solid #e9ecef;
+}
+
+.stat-card .number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3c72;
+  margin: 8px 0;
+}
+
+.stat-card .label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 5px solid #ffc107;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>💾 Backup Firestore Database</h1>
+  <p class="subtitle">สำรองข้อมูลทุก Collection จาก Firestore</p>
+  
+  <div class="info-box">
+    <h3>📌 Collections ทั้งหมด (12 รายการ):</h3>
+    <div class="collections-grid">
+      <div class="collection-item"><span class="icon">✅</span> approved</div>
+      <div class="collection-item"><span class="icon">👥</span> assigners</div>
+      <div class="collection-item"><span class="icon">📅</span> events</div>
+      <div class="collection-item"><span class="icon">🏖️</span> holidays</div>
+      <div class="collection-item"><span class="icon">📝</span> leaves</div>
+      <div class="collection-item"><span class="icon">⚡</span> quickly</div>
+      <div class="collection-item"><span class="icon">📊</span> report2</div>
+      <div class="collection-item"><span class="icon">📈</span> report3</div>
+      <div class="collection-item"><span class="icon">📤</span> report_send</div>
+      <div class="collection-item"><span class="icon">🎓</span> report_training</div>
+      <div class="collection-item"><span class="icon">👤</span> users</div>
+      <div class="collection-item"><span class="icon">🔢</span> workerCount</div>
+      <div class="collection-item"><span class="icon">👷</span> workers</div>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button id="btnBackupAll" onclick="backupAllData()">
+      <span class="icon">📦</span>
+      <span>Backup ทั้งหมด</span>
+      <span class="label">ทุก Collection (13 รายการ)</span>
+    </button>
+    
+    <button onclick="backupCollection('approved')">
+      <span class="icon">✅</span>
+      <span>Approved</span>
+      <span class="label">ข้อมูลที่อนุมัติแล้ว</span>
+    </button>
+    
+    <button onclick="backupCollection('assigners')">
+      <span class="icon">👥</span>
+      <span>Assigners</span>
+      <span class="label">ผู้มอบหมายงาน</span>
+    </button>
+    
+    <button onclick="backupCollection('events')">
+      <span class="icon">📅</span>
+      <span>Events</span>
+      <span class="label">ข้อมูลงาน</span>
+    </button>
+    
+    <button onclick="backupCollection('holidays')">
+      <span class="icon">🏖️</span>
+      <span>Holidays</span>
+      <span class="label">วันหยุด</span>
+    </button>
+    
+    <button onclick="backupCollection('leaves')">
+      <span class="icon">📝</span>
+      <span>Leaves</span>
+      <span class="label">การลางาน</span>
+    </button>
+    
+    <button onclick="backupCollection('quickly')">
+      <span class="icon">⚡</span>
+      <span>Quickly</span>
+      <span class="label">งานด่วน</span>
+    </button>
+    
+    <button onclick="backupCollection('report2')">
+      <span class="icon">📊</span>
+      <span>Report2</span>
+      <span class="label">รายงานประเภท 2</span>
+    </button>
+    
+    <button onclick="backupCollection('report3')">
+      <span class="icon">📈</span>
+      <span>Report3</span>
+      <span class="label">รายงานประเภท 3</span>
+    </button>
+    
+    <button onclick="backupCollection('report_send')">
+      <span class="icon">📤</span>
+      <span>Report Send</span>
+      <span class="label">รายงานที่ส่งแล้ว</span>
+    </button>
+    
+    <button onclick="backupCollection('report_training')">
+      <span class="icon">🎓</span>
+      <span>Report Training</span>
+      <span class="label">รายงานการอบรม</span>
+    </button>
+    
+    <button onclick="backupCollection('users')">
+      <span class="icon">👤</span>
+      <span>Users</span>
+      <span class="label">ผู้ใช้งาน</span>
+    </button>
+    
+    <button onclick="backupCollection('workerCount')">
+      <span class="icon">🔢</span>
+      <span>Worker Count</span>
+      <span class="label">สถิติคนงาน</span>
+    </button>
+    
+    <button onclick="backupCollection('workers')">
+      <span class="icon">👷</span>
+      <span>Workers</span>
+      <span class="label">ข้อมูลคนงาน</span>
+    </button>
+    
+    <button onclick="viewAllData()">
+      <span class="icon">👁️</span>
+      <span>ดูข้อมูลทั้งหมด</span>
+      <span class="label">แสดงสถิติ</span>
+    </button>
+  </div>
+
+  <div class="stats" id="statsContainer"></div>
+
+  <div class="progress" id="progressBar">
+    <div class="progress-bar" id="progressBarInner">0%</div>
+  </div>
+
+  <div class="success" id="successMessage">
+    <h3>✅ Backup สำเร็จ!</h3>
+    <p id="successDetails">ไฟล์ได้ถูกดาวน์โหลดไปยังเครื่องของคุณแล้ว</p>
+  </div>
+
+  <div class="log-box" id="logBox"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  getDocs 
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAXayBBLVSohNCIsnlWRq6rD0BUbW70MGk",
+  authDomain: "events-666d6.firebaseapp.com",
+  projectId: "events-666d6",
+  storageBucket: "events-666d6.firebasestorage.app",
+  messagingSenderId: "589078390914",
+  appId: "1:589078390914:web:480ce96137ffac835aac9b",
+  measurementId: "G-97GD75S814"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// All collections in the system
+const COLLECTIONS = [
+  'approved',
+  'assigners',
+  'events',
+  'holidays',
+  'leaves',
+  'quickly',
+  'report2',
+  'report3',
+  'report_send',
+  'report_training',
+  'users',
+  'workerCount',
+  'workers'
+];
+
+const COLLECTION_ICONS = {
+  'approved': '✅',
+  'assigners': '👥',
+  'events': '📅',
+  'holidays': '🏖️',
+  'leaves': '📝',
+  'quickly': '⚡',
+  'report2': '📊',
+  'report3': '📈',
+  'report_send': '📤',
+  'report_training': '🎓',
+  'users': '👤',
+  'workerCount': '🔢',
+  'workers': '👷'
+};
+
+const logBox = document.getElementById('logBox');
+const progressBar = document.getElementById('progressBar');
+const progressBarInner = document.getElementById('progressBarInner');
+const successMessage = document.getElementById('successMessage');
+const successDetails = document.getElementById('successDetails');
+const statsContainer = document.getElementById('statsContainer');
+
+function log(message, type = 'info') {
+  logBox.classList.add('active');
+  const timestamp = new Date().toLocaleTimeString('th-TH');
+  const color = type === 'error' ? '#f00' : type === 'success' ? '#0f0' : type === 'warning' ? '#ff0' : '#0ff';
+  logBox.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function updateProgress(percent, message = '') {
+  progressBar.classList.add('active');
+  progressBarInner.style.width = percent + '%';
+  progressBarInner.textContent = message || (Math.round(percent) + '%');
+}
+
+function downloadJSON(data, filename) {
+  const dataStr = JSON.stringify(data, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+async function getCollectionData(collectionName) {
+  try {
+    log(`📦 กำลังอ่าน ${collectionName}...`, 'info');
+    const snapshot = await getDocs(collection(db, collectionName));
+    const data = {};
+    
+    snapshot.forEach(doc => {
+      data[doc.id] = doc.data();
+    });
+    
+    log(`${COLLECTION_ICONS[collectionName] || '✅'} ${collectionName}: ${snapshot.size} รายการ`, 'success');
+    return { data, count: snapshot.size };
+  } catch (error) {
+    log(`❌ ไม่สามารถอ่าน ${collectionName}: ${error.message}`, 'error');
+    return { data: {}, count: 0, error: error.message };
+  }
+}
+
+window.backupAllData = async function() {
+  try {
+    logBox.innerHTML = '';
+    successMessage.classList.remove('active');
+    statsContainer.innerHTML = '';
+    statsContainer.classList.remove('active');
+    
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(btn => btn.disabled = true);
+    
+    log('🚀 เริ่มต้น Backup ข้อมูลทั้งหมด...', 'info');
+    log(`📋 จำนวน Collections: ${COLLECTIONS.length} รายการ`, 'info');
+    log('========================================', 'info');
+    
+    const backupData = {
+      metadata: {
+        exportDate: new Date().toISOString(),
+        exportDateThai: new Date().toLocaleString('th-TH'),
+        collections: COLLECTIONS,
+        totalCollections: COLLECTIONS.length
+      }
+    };
+    
+    let totalDocuments = 0;
+    const collectionStats = {};
+    
+    // Backup each collection
+    for (let i = 0; i < COLLECTIONS.length; i++) {
+      const collectionName = COLLECTIONS[i];
+      const progress = ((i + 1) / COLLECTIONS.length) * 90;
+      updateProgress(progress, `กำลังอ่าน ${collectionName}... (${i + 1}/${COLLECTIONS.length})`);
+      
+      const result = await getCollectionData(collectionName);
+      backupData[collectionName] = result.data;
+      
+      collectionStats[collectionName] = result.count;
+      totalDocuments += result.count;
+    }
+    
+    backupData.metadata.totalDocuments = totalDocuments;
+    backupData.metadata.collectionStats = collectionStats;
+    
+    updateProgress(95, 'เตรียมไฟล์...');
+    
+    // Calculate size
+    const dataSize = new Blob([JSON.stringify(backupData)]).size;
+    
+    // Download
+    updateProgress(98, 'ดาวน์โหลด...');
+    const timestamp = new Date().toISOString().split('T')[0];
+    downloadJSON(backupData, `firestore-complete-backup-${timestamp}.json`);
+    
+    updateProgress(100, 'เสร็จสิ้น!');
+    
+    log('', 'info');
+    log('========================================', 'success');
+    log('✨ Backup เสร็จสิ้น!', 'success');
+    log(`📋 Collections: ${COLLECTIONS.length} รายการ`, 'success');
+    log(`📄 Documents รวม: ${totalDocuments} รายการ`, 'success');
+    log(`💾 ขนาดไฟล์: ${formatBytes(dataSize)}`, 'success');
+    log('========================================', 'success');
+    
+    // Show detailed stats
+    log('', 'info');
+    log('📊 รายละเอียดแต่ละ Collection:', 'warning');
+    for (const [name, count] of Object.entries(collectionStats)) {
+      log(`  ${COLLECTION_ICONS[name] || '•'} ${name}: ${count} รายการ`, 'info');
+    }
+    
+    // Display stats cards
+    displayStats(collectionStats, totalDocuments, dataSize);
+    
+    successMessage.classList.add('active');
+    successDetails.innerHTML = `
+      ไฟล์: <strong>firestore-complete-backup-${timestamp}.json</strong><br>
+      📋 Collections: ${COLLECTIONS.length} รายการ<br>
+      📄 Documents: ${totalDocuments} รายการ<br>
+      💾 ขนาด: ${formatBytes(dataSize)}
+    `;
+    
+    buttons.forEach(btn => btn.disabled = false);
+    
+  } catch (error) {
+    log(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'error');
+    console.error('Backup error:', error);
+    document.querySelectorAll('button').forEach(btn => btn.disabled = false);
+  }
+};
+
+window.backupCollection = async function(collectionName) {
+  try {
+    logBox.innerHTML = '';
+    successMessage.classList.remove('active');
+    
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(btn => btn.disabled = true);
+    
+    log(`🚀 เริ่มต้น Backup ${collectionName}...`, 'info');
+    updateProgress(20, 'อ่านข้อมูล...');
+    
+    const result = await getCollectionData(collectionName);
+    
+    updateProgress(60, 'เตรียมไฟล์...');
+    
+    const backupData = {
+      metadata: {
+        exportDate: new Date().toISOString(),
+        exportDateThai: new Date().toLocaleString('th-TH'),
+        collection: collectionName,
+        totalDocuments: result.count
+      },
+      [collectionName]: result.data
+    };
+    
+    const dataSize = new Blob([JSON.stringify(backupData)]).size;
+    
+    updateProgress(80, 'ดาวน์โหลด...');
+    const timestamp = new Date().toISOString().split('T')[0];
+    downloadJSON(backupData, `firestore-backup-${collectionName}-${timestamp}.json`);
+    
+    updateProgress(100, 'เสร็จสิ้น!');
+    
+    log(`✨ Backup ${collectionName} สำเร็จ!`, 'success');
+    log(`📄 จำนวน: ${result.count} รายการ`, 'success');
+    log(`💾 ขนาด: ${formatBytes(dataSize)}`, 'success');
+    
+    successMessage.classList.add('active');
+    successDetails.innerHTML = `
+      ไฟล์: <strong>firestore-backup-${collectionName}-${timestamp}.json</strong><br>
+      ${COLLECTION_ICONS[collectionName] || '📄'} ${collectionName}: ${result.count} รายการ<br>
+      💾 ขนาด: ${formatBytes(dataSize)}
+    `;
+    
+    buttons.forEach(btn => btn.disabled = false);
+    
+  } catch (error) {
+    log(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'error');
+    console.error('Backup error:', error);
+    document.querySelectorAll('button').forEach(btn => btn.disabled = false);
+  }
+};
+
+window.viewAllData = async function() {
+  try {
+    logBox.innerHTML = '';
+    successMessage.classList.remove('active');
+    statsContainer.innerHTML = '';
+    
+    log('🔍 กำลังตรวจสอบข้อมูลทั้งหมด...', 'info');
+    
+    const collectionStats = {};
+    let totalDocuments = 0;
+    let totalSize = 0;
+    
+    for (const collectionName of COLLECTIONS) {
+      const result = await getCollectionData(collectionName);
+      collectionStats[collectionName] = result.count;
+      totalDocuments += result.count;
+      
+      const size = new Blob([JSON.stringify(result.data)]).size;
+      totalSize += size;
+    }
+    
+    log('', 'info');
+    log('========================================', 'warning');
+    log('📊 สรุปข้อมูลในฐานข้อมูล', 'warning');
+    log('========================================', 'warning');
+    log(`📋 Collections: ${COLLECTIONS.length} รายการ`, 'info');
+    log(`📄 Documents รวม: ${totalDocuments} รายการ`, 'info');
+    log(`💾 ขนาดรวมประมาณ: ${formatBytes(totalSize)}`, 'info');
+    log('========================================', 'info');
+    log('', 'info');
+    
+    // Detailed stats
+    log('📊 รายละเอียดแต่ละ Collection:', 'warning');
+    for (const [name, count] of Object.entries(collectionStats)) {
+      log(`  ${COLLECTION_ICONS[name] || '•'} ${name}: ${count} รายการ`, 'info');
+    }
+    
+    displayStats(collectionStats, totalDocuments, totalSize);
+    
+  } catch (error) {
+    log(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'error');
+    console.error('View error:', error);
+  }
+};
+
+function displayStats(collectionStats, totalDocuments, totalSize) {
+  statsContainer.classList.add('active');
+  statsContainer.innerHTML = '';
+  
+  // Total stats
+  statsContainer.innerHTML += `
+    <div class="stat-card">
+      <div class="label">📋 Collections</div>
+      <div class="number">${COLLECTIONS.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">📄 Documents รวม</div>
+      <div class="number">${totalDocuments}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">💾 ขนาดรวม</div>
+      <div class="number">${formatBytes(totalSize)}</div>
+    </div>
+  `;
+  
+  // Individual collection stats
+  for (const [name, count] of Object.entries(collectionStats)) {
+    statsContainer.innerHTML += `
+      <div class="stat-card">
+        <div class="label">${COLLECTION_ICONS[name] || '•'} ${name}</div>
+        <div class="number">${count}</div>
+      </div>
+    `;
+  }
+}
+
+</script>
+
+</body>
+</html>

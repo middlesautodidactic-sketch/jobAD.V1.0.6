@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🏖 จัดการวันลา - AUTODIDACTIC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 50%, #ffd0d0 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(204, 0, 0, 0.1);
+      border: 1px solid rgba(204, 0, 0, 0.1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(204, 0, 0, 0.05) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .logo-container {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 20px;
+    }
+
+    .logo-box {
+      display: inline-block;
+      background: linear-gradient(135deg, #c00 0%, #a00 100%);
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(204, 0, 0, 0.3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .logo-box img {
+      width: 70px;
+      height: auto;
+      display: block;
+      filter: brightness(0) invert(1);
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      color: #c00;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(204, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      position: relative;
+      z-index: 1;
+      color: #666;
+      font-size: 16px;
+      font-weight: 300;
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #c00 0%, #a00 100%);
+      color: #fff;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+    }
+
+    /* Card Sections */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(204, 0, 0, 0.1);
+      border: 1px solid rgba(204, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(204, 0, 0, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(204, 0, 0, 0.1);
+    }
+
+    .card-icon {
+      font-size: 28px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #c00 0%, #a00 100%);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+    }
+
+    .card-title {
+      color: #c00;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    input[type="date"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid rgba(204, 0, 0, 0.2);
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: 'Kanit', sans-serif;
+      transition: all 0.3s ease;
+      background: #fff;
+    }
+
+    input[type="date"]:focus,
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #c00;
+      box-shadow: 0 0 0 4px rgba(204, 0, 0, 0.1);
+    }
+
+    input[type="text"][readonly] {
+      background: linear-gradient(135deg, #f5f5f5 0%, #f0f0f0 100%);
+      cursor: not-allowed;
+      color: #666;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #c00 0%, #a00 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+      margin-top: 10px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-cancel {
+      width: 100%;
+      background: linear-gradient(135deg, #666 0%, #555 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 102, 102, 0.3);
+      margin-top: 10px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .btn-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 102, 102, 0.4);
+    }
+
+    /* Leave Items */
+    .leave-list-container {
+      display: grid;
+      gap: 20px;
+    }
+
+    .leave-item {
+      background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+      border: 2px solid rgba(204, 0, 0, 0.15);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .leave-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(180deg, #c00 0%, #a00 100%);
+    }
+
+    .leave-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 8px 24px rgba(204, 0, 0, 0.15);
+      border-color: #c00;
+    }
+
+    .leave-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+
+    .leave-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #c00;
+    }
+
+    .leave-badge {
+      background: linear-gradient(135deg, #c00 0%, #a00 100%);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(204, 0, 0, 0.3);
+    }
+
+    .leave-details {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 15px;
+      color: #666;
+    }
+
+    .leave-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .leave-detail-icon {
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(204, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .file-upload-section {
+      background: rgba(204, 0, 0, 0.05);
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed rgba(204, 0, 0, 0.3);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      margin-bottom: 10px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    input[type="file"]:hover {
+      border-color: #c00;
+      background: #fff5f5;
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .btn-upload {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-upload:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, #ff5252 0%, #e03e3e 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 82, 82, 0.4);
+    }
+
+    .file-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #c00;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 12px;
+      background: #fff;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .file-link:hover {
+      background: #c00;
+      color: #fff;
+      transform: translateX(3px);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-size: 18px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #c00;
+      font-size: 18px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .header {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card-title {
+        font-size: 20px;
+      }
+
+      .btn-group {
+        grid-template-columns: 1fr;
+      }
+
+      .leave-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo-box">
+          <img src="ad_logo-Photoroom.png" alt="Logo">
+        </div>
+      </div>
+      <h1>🏖 จัดการวันลา</h1>
+      <p class="subtitle">ระบบบริหารจัดการวันลาพนักงาน</p>
+    </div>
+
+    <!-- Back Button -->
+    <a href="adminV2.html" class="back-btn">
+      <span>⬅️</span>
+      <span>กลับหน้า ADMIN</span>
+    </a>
+
+    <!-- Add/Edit Leave Form -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" id="formIcon">➕</div>
+        <h2 class="card-title" id="formTitle">เพิ่มวันลาใหม่</h2>
+      </div>
+
+      <div class="form-group">
+        <label>ชื่อพนักงาน</label>
+        <input type="text" id="leaveWorker" readonly>
+      </div>
+
+      <div class="form-group">
+        <label>วันที่เริ่มลา</label>
+        <input type="date" id="leaveStart">
+      </div>
+
+      <div class="form-group">
+        <label>วันที่สิ้นสุด</label>
+        <input type="date" id="leaveEnd">
+      </div>
+
+      <div class="form-group">
+        <label>เหตุผลการลา</label>
+        <select id="leaveReason">
+          <option value="">-- เลือกเหตุผลการลา --</option>
+          <option value="ลากิจ">ลากิจ</option>
+          <option value="ลาป่วย">ลาป่วย</option>
+          <option value="ลาพักร้อน">ลาพักร้อน</option>
+          <option value="สลับหยุด">สลับหยุด</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" id="addLeaveBtn">บันทึกวันลา</button>
+      <button class="btn-cancel" id="cancelEditBtn" style="display:none;">❌ ยกเลิกการแก้ไข</button>
+    </div>
+
+    <!-- Leave List -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📅</div>
+        <h2 class="card-title">รายการวันลาของคุณ</h2>
+      </div>
+      <div id="leaveList" class="loading">⏳ กำลังโหลดข้อมูล...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs,
+      addDoc, deleteDoc, doc, updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUserName = "";
+    let editingLeaveId = null;
+
+    function setCurrentUserFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const name = params.get("name");
+      currentUserName = name ? decodeURIComponent(name) : "";
+      document.getElementById("leaveWorker").value = currentUserName || "ไม่พบข้อมูลผู้ใช้";
+    }
+
+    async function loadLeaves() {
+      const leaveList = document.getElementById("leaveList");
+      leaveList.innerHTML = '<div class="loading">⏳ กำลังโหลดข้อมูล...</div>';
+
+      const snap = await getDocs(collection(db, "leaves"));
+      leaveList.innerHTML = "";
+      
+      const container = document.createElement("div");
+      container.className = "leave-list-container";
+      
+      let hasData = false;
+
+      snap.forEach(d => {
+        const data = d.data();
+        if (data.name !== currentUserName) return;
+        hasData = true;
+
+        const div = document.createElement("div");
+        div.className = "leave-item";
+
+        div.innerHTML = `
+          <div class="leave-header">
+            <div class="leave-name">${data.name}</div>
+            <div class="leave-badge">${data.reason || "ไม่ระบุ"}</div>
+          </div>
+          
+          <div class="leave-details">
+            <div class="leave-detail-item">
+              <div class="leave-detail-icon">📅</div>
+              <div>
+                <strong>วันที่:</strong> ${data.start} ถึง ${data.end}
+              </div>
+            </div>
+            ${data.fileUrl ? `
+              <div class="leave-detail-item">
+                <div class="leave-detail-icon">📎</div>
+                <a href="${data.fileUrl}" target="_blank" class="file-link">
+                  <span>เปิดเอกสารแนบ</span>
+                  <span>→</span>
+                </a>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="file-upload-section">
+            <input type="file" id="file-${d.id}" accept=".pdf,.jpg,.jpeg,.png">
+            <div class="btn-group">
+              <button class="btn-secondary btn-upload" onclick="uploadFile('${d.id}')">
+                📤 แนบเอกสาร
+              </button>
+              <button class="btn-secondary btn-edit" onclick="editLeave('${d.id}', '${data.start}', '${data.end}', '${data.reason}')">
+                ✏️ แก้ไข
+              </button>
+              <button class="btn-secondary btn-delete" onclick="deleteLeave('${d.id}')">
+                🗑️ ลบ
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+
+      if (!hasData) {
+        leaveList.innerHTML = '<div class="empty-state">📭 ยังไม่มีรายการวันลาของคุณ</div>';
+      } else {
+        leaveList.appendChild(container);
+      }
+    }
+
+    document.getElementById("addLeaveBtn").addEventListener("click", async () => {
+      const name = document.getElementById("leaveWorker").value;
+      const start = document.getElementById("leaveStart").value;
+      const end = document.getElementById("leaveEnd").value;
+      const reason = document.getElementById("leaveReason").value;
+
+      if (!name || !start || !end || !reason) {
+        alert("⚠️ กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        return;
+      }
+
+      if (editingLeaveId) {
+        await updateDoc(doc(db, "leaves", editingLeaveId), {
+          start, end, reason
+        });
+        alert("✅ แก้ไขวันลาเรียบร้อยแล้ว");
+        resetForm();
+      } else {
+        await addDoc(collection(db, "leaves"), {
+          name, start, end, reason
+        });
+        alert("✅ บันทึกวันลาเรียบร้อยแล้ว");
+        clearForm();
+      }
+
+      loadLeaves();
+    });
+
+   window.editLeave = (id, start, end, reason) => {
+      editingLeaveId = id;
+      
+      document.getElementById("leaveStart").value = start;
+      document.getElementById("leaveEnd").value = end;
+      document.getElementById("leaveReason").value = reason;
+      
+      document.getElementById("formIcon").textContent = "✏️";
+      document.getElementById("formTitle").textContent = "แก้ไขวันลา";
+      document.getElementById("addLeaveBtn").textContent = "💾 บันทึกการแก้ไข";
+      document.getElementById("cancelEditBtn").style.display = "block";
+      
+      // เลื่อนมาที่ card แก้ไขพอดี
+      const formCard = document.querySelector('.card');
+      formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    document.getElementById("cancelEditBtn").addEventListener("click", () => {
+      resetForm();
+    });
+
+    function resetForm() {
+      editingLeaveId = null;
+      clearForm();
+      document.getElementById("formIcon").textContent = "➕";
+      document.getElementById("formTitle").textContent = "เพิ่มวันลาใหม่";
+      document.getElementById("addLeaveBtn").textContent = "บันทึกวันลา";
+      document.getElementById("cancelEditBtn").style.display = "none";
+    }
+
+    function clearForm() {
+      document.getElementById("leaveStart").value = "";
+      document.getElementById("leaveEnd").value = "";
+      document.getElementById("leaveReason").value = "";
+    }
+
+    window.uploadFile = async (id) => {
+      const fileInput = document.getElementById(`file-${id}`);
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("⚠️ กรุณาเลือกไฟล์ก่อนอัปโหลด");
+        return;
+      }
+
+      const fileRef = ref(storage, `leaves/${id}/${file.name}`);
+
+      try {
+        await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(fileRef);
+        await updateDoc(doc(db, "leaves", id), { fileUrl: url });
+        alert("✅ แนบเอกสารสำเร็จ");
+        loadLeaves();
+      } catch (err) {
+        console.error(err);
+        alert("❌ เกิดข้อผิดพลาดในการอัปโหลด");
+      }
+    };
+
+    window.deleteLeave = async (id) => {
+      if (confirm("❓ ต้องการลบวันลานี้ใช่หรือไม่?")) {
+        await deleteDoc(doc(db, "leaves", id));
+        alert("✅ ลบรายการเรียบร้อยแล้ว");
+        loadLeaves();
+      }
+    };
+
+    setCurrentUserFromURL();
+    loadLeaves();
+  </script>
+</body>
+</html>

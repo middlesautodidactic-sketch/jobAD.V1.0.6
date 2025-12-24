@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>👔 Manager - ตรวจสอบและแก้ไขงาน</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ====== Global (มือถือเป็นหลัก) ====== */
+body {
+  font-family: 'Prompt', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ===== Header ===== */
+header {
+  background: linear-gradient(90deg, #c00, #f44336);
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+header nav a {
+  color: #fff;
+  background: rgba(0,0,0,0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 8px;
+  transition: 0.3s;
+}
+header nav a:hover {
+  background: rgba(255,255,255,0.3);
+}
+.logo-container img {
+  width: 50px;
+  height: auto;
+  background: rgba(255,255,255,0.85);
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.user-name {
+  background: rgba(255,255,255,0.2);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== Content ===== */
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  color: #c00;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ===== Event Cards ===== */
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.event-list li {
+  border-left: 6px solid #c00;
+  border-radius: 10px;
+  padding: 15px;
+  background: #fff8f8;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+/* สไตล์สำหรับงานด่วน */
+.event-list li.urgent {
+  border-left-color: #ff5722;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e0 100%);
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.15);
+}
+
+.urgent-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 10px;
+  box-shadow: 0 3px 10px rgba(255, 87, 34, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 3px 10px rgba(255, 87, 34, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 87, 34, 0.5);
+  }
+}
+
+.event-list li:hover { transform: translateY(-3px); }
+
+.event-details { 
+  line-height: 1.6; 
+  font-size: 15px; 
+}
+
+footer {
+  background: linear-gradient(90deg, #c00, #f44336);
+  color: #fff;
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  box-shadow: 0 -3px 6px rgba(0,0,0,0.1);
+  position: sticky;
+  bottom: 0;
+}
+
+/* ===== Buttons ===== */
+button, .btn-link {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.approve { background: #4caf50; color: #fff; }
+.quick-approve { background: #ff9800; color: #fff; }
+.reject { background: #f44336; color: #fff; }
+.edit { background: #1976d2; color: #fff; text-decoration:none; display:inline-block; text-align:center; padding:8px 14px; border-radius:8px;}
+button:hover, .edit:hover { opacity: 0.9; }
+
+.btn-link {
+  background: rgba(0,0,0,0.1);
+  color: #fff;
+  text-decoration: none;
+}
+
+.dropdown {
+  position: relative;
+  display: block;
+  left: 0;
+}
+
+.dropbtn {
+  background-color: #c00;
+  color: white;
+  padding: 10px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background-color: #fff;
+  min-width: 180px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* ===== Modal Popup ===== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+  from { 
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #4caf50;
+  font-size: 22px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #fafafa;
+}
+
+.checkbox-option:hover {
+  border-color: #4caf50;
+  background: #f1f8f4;
+}
+
+.checkbox-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  cursor: pointer;
+  accent-color: #4caf50;
+}
+
+.checkbox-option label {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+.checkbox-option input[type="radio"]:checked + label {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-confirm {
+  background: #4caf50;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.btn-confirm:hover {
+  background: #45a049;
+}
+
+.btn-cancel:hover {
+  background: #d0d0d0;
+}
+
+/* ====== Responsive (มือถือ / จอเล็ก) ====== */
+@media (max-width: 600px), (orientation: portrait), (orientation: landscape) {
+  header {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: clamp(10px, 2vw, 20px);
+    gap: clamp(10px, 2vw, 20px);
+  }
+
+  .nav-buttons {
+    display: none;
+  }
+
+  .dropdown {
+    display: block;
+    left: 0;
+  }
+
+  main {
+    padding: clamp(12px, 2vw, 24px);
+  }
+  
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-size: 12px;
+    padding: 10px;
+  }
+  
+  .modal-content {
+    margin: 25% auto;
+    width: 85%;
+  }
+}
+
+/* ====== Desktop (≥1200px) ====== */
+@media (min-width: 1200px) {
+  main {
+    max-width: 1100px;
+    padding: 24px;
+  }
+
+  .nav-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .dropdown {
+    display: none;
+  }
+}
+/* ====== Custom Alert Overlay ====== */
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.custom-alert-box {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.custom-alert-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 0.6s ease;
+}
+
+.custom-alert-title {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.custom-alert-message {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.custom-alert-redirect {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-top: 1rem;
+}
+
+.custom-alert-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(192, 0, 0, 0.2);
+  border-radius: 2px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.custom-alert-progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  animation: progressBar 3s linear;
+  border-radius: 2px;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes progressBar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-container">
+    <img src="ad_logo-Photoroom.png" alt="Logo">
+  </div>
+  <div style="font-size:18px;">
+    👔 ตรวจสอบและแก้ไขงาน (Manager)
+    <div class="user-name" id="userNameDisplay">กำลังโหลด...</div>
+  </div>
+
+  <div class="dropdown">
+    <button class="dropbtn">☰ เมนู</button>
+    <div class="dropdown-content">
+    <a href="#" onclick="navigateWithName('calendarM.html')">📅 ปฏิทินงาน</a>
+    <a href="#" onclick="navigateWithName('result.html')">📊 ผลสรุปงาน</a>
+    <a href="index.html">🏠 หน้าหลัก</a>
+    </div>
+  </div>
+
+  <nav class="nav-buttons">
+    <a href="#" onclick="navigateWithName('calendarM.html')">📅 ปฏิทินงาน</a>
+    <a href="#" onclick="navigateWithName('result.html')">📊 ผลสรุปงาน</a>
+    <a href="index.html">🏠 หน้าหลัก</a>
+  </nav>
+</header>
+
+<main>
+  <h2>📋 รายการงานที่รอตรวจสอบ</h2>
+  <ul id="eventList" class="event-list"></ul>
+</main>
+
+<!-- Modal Popup -->
+<div id="approvalModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>✅ ยืนยันการอนุมัติงาน</h3>
+    </div>
+    
+    <div class="checkbox-group">
+      <div class="checkbox-option">
+        <input type="radio" id="signSelf" name="signType" value="เซ็นเอง" checked>
+        <label for="signSelf">✍️ เซ็นเอง</label>
+      </div>
+      
+      <div class="checkbox-option">
+        <input type="radio" id="noSign" name="signType" value="ไม่เซ็นเอง">
+        <label for="noSign">📝 ไม่เซ็นเอง</label>
+      </div>
+    </div>
+    
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn-confirm" onclick="confirmApproval()">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2025 ระบบจัดการงาน | AUTODIDACTIC SYSTEM
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { 
+  getDatabase, ref, onValue, set, update, get, increment 
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app); // ใช้ getDatabase แทน getFirestore
+
+const eventList = document.getElementById("eventList");
+const modal = document.getElementById("approvalModal");
+let currentEventId = null;
+let currentWorkers = [];
+let managerName = "Manager"; // Default
+
+// ดึงชื่อจาก URL
+async function getManagerNameFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const originalEventId = urlParams.get('originalEventId');
+
+  // Session storage checks
+const userId = sessionStorage.getItem("userId");
+const userName = sessionStorage.getItem("userName");
+const userPosition = sessionStorage.getItem("userPosition");
+
+// ✅ เพิ่มโค้ดตรงนี้ - ตรวจสอบการ login
+if (!userId || !userName) {
+  // สร้าง custom alert
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-alert-overlay';
+  
+  overlay.innerHTML = `
+    <div class="custom-alert-box">
+      <div class="custom-alert-icon">⚠️</div>
+      <h2 class="custom-alert-title">กรุณาเข้าสู่ระบบ</h2>
+      <p class="custom-alert-message">กรุณาเข้าสู่ระบบก่อนเข้าใช้งาน</p>
+      <p class="custom-alert-redirect">กำลังนำคุณกลับไปหน้าหลัก...</p>
+      <div class="custom-alert-progress">
+        <div class="custom-alert-progress-bar"></div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 3000);
+  
+  throw new Error('Not logged in');
+}
+  
+  if (originalEventId) {
+    try {
+      // ค้นหาชื่อจาก Firebase โดยใช้ originalEventId
+      const userRef = ref(db, `users/${originalEventId}`);
+      const snapshot = await get(userRef);
+      
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        managerName = userData.name || 'Manager';
+        document.getElementById('userNameDisplay').textContent = `👤 ${managerName}`;
+        console.log('Found user:', managerName);
+      } else {
+        console.log('User not found with originalEventId:', originalEventId);
+        document.getElementById('userNameDisplay').textContent = '👤 Manager';
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      document.getElementById('userNameDisplay').textContent = '👤 Manager';
+    }
+  } else {
+    console.log('No originalEventId in URL');
+    document.getElementById('userNameDisplay').textContent = '👤 Manager';
+  }
+  
+  return managerName;
+}
+
+// ฟังก์ชันสำหรับเปลี่ยนหน้าพร้อมส่งชื่อไปด้วย
+window.navigateWithName = function(page) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const name = urlParams.get('name');
+  
+  if (name) {
+    window.location.href = `${page}?name=${encodeURIComponent(name)}`;
+  } else {
+    window.location.href = page;
+  }
+  
+  return false; // ป้องกันการ navigate แบบปกติ
+};
+
+// เรียกใช้ตอน load หน้า
+getManagerNameFromURL();
+
+function formatDateThai(dateStr) {
+  if (!dateStr || dateStr === "-") return "-";
+  
+  try {
+    const date = new Date(dateStr + "T00:00:00");
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear() + 543;
+    
+    return `${day}-${month}-${year}`;
+  } catch (err) {
+    return dateStr;
+  }
+}
+
+// *** โค้ดหลักในการดึงข้อมูลแบบ Realtime ***
+function loadEvents() {
+  const eventsRef = ref(db, 'events'); // อ้างอิงถึง Path 'events'
+  
+  // ใช้ onValue เพื่อฟังการเปลี่ยนแปลงข้อมูลแบบ Realtime
+  onValue(eventsRef, (snapshot) => {
+    eventList.innerHTML = "";
+    const data = snapshot.val(); // ดึงข้อมูลทั้งหมดใน events มาเป็น Object
+
+    if (!data) return;
+
+    // เก็บงานทั้งหมดไว้ใน array เพื่อจัดเรียง
+    const events = [];
+    
+    // แปลง Object ของ RTDB เป็น Array ของงาน
+    // key คือ eventId, value คือ data ของ event
+    Object.keys(data).forEach(id => {
+      const eventData = data[id];
+      // กรองงานที่ไม่ต้องการแสดง (ทำในฝั่ง client)
+      if (!["อนุมัติ", "อนุมัติด่วน", "เรียบร้อย", "ไม่เรียบร้อย"].includes(eventData.status)) {
+        events.push({ id: id, data: eventData });
+      }
+    });
+
+    // จัดเรียงตาม logic เดิม (งานรออนุมัติครั้งที่ 2 > งานด่วน)
+    events.sort((a, b) => {
+      const aWaiting2nd = a.data.status === "รอการอนุมัติครั้งที่ 2";
+      const bWaiting2nd = b.data.status === "รอการอนุมัติครั้งที่ 2";
+      const aUrgent = a.data.isUrgent === true;
+      const bUrgent = b.data.isUrgent === true;
+      
+      if (aWaiting2nd && !bWaiting2nd) return -1;
+      if (!aWaiting2nd && bWaiting2nd) return 1;
+      
+      if (aUrgent && !bUrgent) return -1;
+      if (!aUrgent && bUrgent) return 1;
+      
+      return 0;
+    });
+
+    // แสดงผลงานที่จัดเรียงแล้ว
+    events.forEach(({ id, data }) => {
+      const li = document.createElement("li");
+      
+      if (data.isUrgent === true || data.status === "รอการอนุมัติครั้งที่ 2") {
+        li.classList.add('urgent');
+      }
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const nameParam = urlParams.get('name') ? `&name=${encodeURIComponent(urlParams.get('name'))}` : '';
+      
+      let urgentBadge = '';
+      if (data.status === "รอการอนุมัติครั้งที่ 2") {
+        urgentBadge = '<div class="urgent-badge">🔥 รอการอนุมัติครั้งที่ 2</div>';
+      } else if (data.isUrgent === true) {
+        urgentBadge = '<div class="urgent-badge">🔥 งานด่วน (ต้องอนุมัติ 2 ครั้ง)</div>';
+      }
+      
+      let firstApprovalInfo = '';
+      if (data.firstApproval) {
+        firstApprovalInfo = `<div style="background: #fff3cd; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 4px solid #ffc107;">
+          <strong>✅ อนุมัติครั้งที่ 1:</strong><br>
+          👤 ${data.firstApproval.approvedBy}<br>
+          📝 ${data.firstApproval.signType}<br>
+          🕐 ${new Date(data.firstApproval.approvedTime).toLocaleString('th-TH')}
+        </div>`;
+      }
+      
+      li.innerHTML = `
+        ${urgentBadge}
+        <div class="event-details">
+          <strong>หมายเลขงาน:</strong> ${data.jobNumber || "-"}<br>
+          <strong>ผู้ปฏิบัติงาน:</strong> ${(data.workers || []).join(", ") || "-"}<br>
+          <strong>สถานที่:</strong> ${data.location || "-"}<br>
+          <strong>ลักษณะงาน:</strong> ${(data.jobTypes || []).join(", ") || "-"}<br>
+          <strong>วันที่:</strong> ${formatDateThai(data.start) || "-"} → ${formatDateThai(data.end) || "-"}<br>
+          <strong>สถานะ:</strong> ${data.status || "รออนุมัติ"}
+        </div>
+        ${firstApprovalInfo}
+        <div style="margin-top:10px;">
+          <a href="editM.html?id=${id}${nameParam}" class="edit">✏️ เพิ่มชื่อ / แก้ไข</a>
+          <button class="reject" onclick="rejectEvent('${id}')">❌ ปฏิเสธ</button>
+          <button class="approve" onclick="approveEvent('${id}', ${JSON.stringify(data.workers || []).replace(/"/g, '&quot;')})">✅ อนุมัติ</button>
+        </div>
+      `;
+      eventList.appendChild(li);
+    });
+  }, (error) => {
+    console.error("RTDB Error: ", error);
+    eventList.innerHTML = `<li>เกิดข้อผิดพลาดในการโหลดงาน: ${error.message}</li>`;
+  });
+}
+
+loadEvents(); // เริ่มต้นฟังการเปลี่ยนแปลงข้อมูล
+
+window.approveEvent = function(id, workers) {
+  currentEventId = id;
+  currentWorkers = workers || [];
+  modal.style.display = "block";
+  document.getElementById("signSelf").checked = true;
+};
+
+window.closeModal = function() {
+  modal.style.display = "none";
+  currentEventId = null;
+  currentWorkers = [];
+};
+
+window.confirmApproval = async function() {
+  const selectedSign = document.querySelector('input[name="signType"]:checked').value;
+  const eventRef = ref(db, `events/${currentEventId}`);
+
+  // ดึงข้อมูลงานปัจจุบัน (ใช้ get() แทน getDoc())
+  const eventSnapshot = await get(eventRef);
+  const eventData = eventSnapshot.val();
+
+  if (!eventData) {
+    alert("❌ ไม่พบข้อมูลงาน!");
+    closeModal();
+    return;
+  }
+  
+  const isUrgentTask = eventData.isUrgent === true;
+  const updates = {};
+  
+  if (isUrgentTask) {
+    // งานด่วน: ต้องการการอนุมัติ 2 ครั้ง
+    
+    if (!eventData.firstApproval) {
+      // ยังไม่มีการอนุมัติครั้งแรก -> บันทึกการอนุมัติครั้งที่ 1
+      updates.status = "รอการอนุมัติครั้งที่ 2";
+      updates.firstApproval = {
+        approvedBy: managerName,
+        signType: selectedSign,
+        approvedTime: new Date().toISOString()
+      };
+      
+      await update(eventRef, updates);
+      
+      alert(`✅ อนุมัติครั้งที่ 1 สำเร็จ (${selectedSign})\nรอการอนุมัติครั้งที่ 2 จากผู้อนุมัติท่านอื่น (หรือท่านเดิมก็ได้)`);
+      
+    } else {
+      // มีการอนุมัติครั้งแรกแล้ว -> บันทึกการอนุมัติครั้งที่ 2 และเสร็จสิ้น
+      updates.status = "อนุมัติด่วน";
+      updates.secondApproval = {
+        approvedBy: managerName,
+        signType: selectedSign,
+        approvedTime: new Date().toISOString()
+      };
+      
+      await update(eventRef, updates);
+
+      // อัปเดต workerCount สำหรับแต่ละคน (+1)
+      const workerUpdates = {};
+      const currentTime = new Date().toISOString();
+      for (const worker of currentWorkers) {
+        if (worker && worker.trim()) {
+          // ใน RTDB ไม่รองรับ increment โดยตรงกับ set/update นอก transaction
+          // แต่เราสามารถใช้ increment() ใน update() ได้ใน v9+
+          workerUpdates[`workerCount/${worker.trim()}/count`] = increment(1);
+          workerUpdates[`workerCount/${worker.trim()}/lastUpdated`] = currentTime;
+          
+          // ต้องเตรียมโครงสร้างข้อมูลเริ่มต้น หากไม่เคยมีมาก่อน
+          // เนื่องจากไม่มี setDoc เหมือน Firestore ต้องใช้ get ก่อน หรือใช้ runTransaction
+          // แต่เพื่อความง่ายจะใช้การ update() เพื่อเพิ่มค่าอย่างเดียว
+          // *หมายเหตุ: หากไม่มี workerCount/worker.trim() อยู่ก่อน โค้ดนี้อาจสร้าง field 'count' และ 'lastUpdated'
+          // แต่จะไม่สร้าง field 'name', 'completed', 'incomplete' ซึ่งควรแก้ไขด้วยการ set() หากไม่พบข้อมูล
+          
+          // สำหรับโค้ดที่รัดกุมกว่า (ต้องใช้ runTransaction)
+          // แต่เพื่อให้ใกล้เคียงกับ logic เดิมมากที่สุด เราจะใช้ increment() ใน update
+        }
+      }
+      
+      if (Object.keys(workerUpdates).length > 0) {
+        // อัปเดต workerCount (ใช้ ref ที่ root)
+        await update(ref(db), workerUpdates); 
+      }
+      
+      // แจ้งว่าใครอนุมัติครั้งที่ 1 และครั้งที่ 2
+      alert(`✅ อนุมัติครั้งที่ 2 สำเร็จ!\n\n` + 
+            `อนุมัติครั้งที่ 1 โดย: ${eventData.firstApproval.approvedBy}\n` +
+            `อนุมัติครั้งที่ 2 โดย: ${managerName}\n\n` +
+            `งานด่วนได้รับการอนุมัติครบแล้ว!`);
+    }
+    
+  } else {
+    // งานปกติ: อนุมัติครั้งเดียวเสร็จ
+    updates.status = "อนุมัติ";
+    updates.signType = selectedSign;
+    updates.approvedBy = managerName;
+    updates.approvedTime = new Date().toISOString();
+    
+    await update(eventRef, updates); 
+    
+    // อัปเดต workerCount สำหรับแต่ละคน (+1)
+    const workerUpdates = {};
+    const currentTime = new Date().toISOString();
+    for (const worker of currentWorkers) {
+      if (worker && worker.trim()) {
+        workerUpdates[`workerCount/${worker.trim()}/count`] = increment(1);
+        workerUpdates[`workerCount/${worker.trim()}/lastUpdated`] = currentTime;
+      }
+    }
+
+    if (Object.keys(workerUpdates).length > 0) {
+      await update(ref(db), workerUpdates);
+    }
+    
+    alert(`✅ อนุมัติงานสำเร็จ (${selectedSign})`);
+  }
+  
+  closeModal();
+  // ไม่ต้องเรียก loadEvents() ซ้ำ เพราะ onValue จะจัดการการอัปเดตแบบเรียลไทม์แล้ว
+};
+
+window.rejectEvent = async function(id) {
+  if(confirm("❌ ยืนยันการปฏิเสธงานนี้หรือไม่?")) {
+    const eventRef = ref(db, `events/${id}`);
+    await update(eventRef, { 
+      status: "ปฏิเสธ",
+      rejectedBy: managerName,
+      rejectedTime: new Date().toISOString()
+    });
+    // ไม่ต้องเรียก loadEvents() ซ้ำ เพราะ onValue จะจัดการการอัปเดตแบบเรียลไทม์แล้ว
+  }
+};
+
+// ปิด modal เมื่อคลิกนอกกรอบ
+window.onclick = function(event) {
+  if (event.target == modal) {
+    closeModal();
+  }
+};
+</script>
+
+</body>
+</html>

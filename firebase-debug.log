@@ -1,0 +1,39 @@
+[debug] [2025-12-23T07:33:27.826Z] ----------------------------------------------------------------------
+[debug] [2025-12-23T07:33:27.830Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\EnginneerAD\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-12-23T07:33:27.830Z] CLI Version:   15.1.0
+[debug] [2025-12-23T07:33:27.830Z] Platform:      win32
+[debug] [2025-12-23T07:33:27.830Z] Node Version:  v24.12.0
+[debug] [2025-12-23T07:33:27.830Z] Time:          Tue Dec 23 2025 14:33:27 GMT+0700 (เวลาอินโดจีน)
+[debug] [2025-12-23T07:33:27.831Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\EnginneerAD\Desktop\calendar
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2025-12-23T07:33:43.911Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-23T07:33:43.911Z] > authorizing via signed-in user (tawan10945@gmail.com)
+[debug] [2025-12-23T07:33:43.912Z] Checked if tokens are valid: true, expires at: 1766478320271
+[debug] [2025-12-23T07:33:43.912Z] Checked if tokens are valid: true, expires at: 1766478320271
+[debug] [2025-12-23T07:33:43.914Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/events-666d6 [none]
+[debug] [2025-12-23T07:33:44.319Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/events-666d6 403
+[debug] [2025-12-23T07:33:44.320Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/events-666d6 {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-12-23T07:33:44.320Z] Request to https://firebase.googleapis.com/v1beta1/projects/events-666d6 had HTTP Error: 403, The caller does not have permission
+[debug] [2025-12-23T07:33:44.407Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/events-666d6 had HTTP Error: 403, The caller does not have permission
+    at responseToError (C:\Users\EnginneerAD\AppData\Roaming\npm\node_modules\firebase-tools\lib\responseToError.js:53:12)
+    at RetryOperation._fn (C:\Users\EnginneerAD\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:322:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[error] 
+[error] Error: Failed to get Firebase project events-666d6. Please make sure the project exists and your account has permission to access it.

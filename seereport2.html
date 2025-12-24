@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ข้อมูลเบื้องต้นงานการจัดแสดงหรือสาธิต</title>
+<style>
+body {
+  font-family: "TH SarabunPSK", sans-serif;
+  font-size: 14px;
+  margin: 40px;
+  color: #000;
+}
+h3 {
+  text-align: center;
+  margin-bottom: 0;
+}
+p.right {
+  text-align: right;
+  margin-top: 5px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 15px;
+}
+th, td {
+  border: 1px solid #000;
+  padding: 5px 6px;
+  vertical-align: top;
+}
+th {
+  text-align: center;
+  background: #f5f5f5;
+}
+input[type="text"], input[type="date"] {
+  width: 100%;
+  border: none;
+  border-bottom: 1px dotted #000;
+  font-size: 14px;
+  font-family: "TH SarabunPSK", sans-serif;
+  outline: none;
+  background: transparent;
+}
+input[type="date"] {
+  padding: 2px 4px;
+  border: none;
+  border-bottom: 1px dotted #000;
+  background: transparent;
+  position: relative;
+  color: transparent;
+}
+/* แสดงวันที่พ.ศ. บนเส้นประ */
+input[type="date"]::before {
+  content: attr(data-thai-date);
+  position: absolute;
+  left: 0;
+  color: #000;
+  pointer-events: none;
+}
+input[type="date"]::-webkit-datetime-edit {
+  color: transparent;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 0;
+  opacity: 0.5;
+  cursor: pointer;
+}
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 4px;
+}
+button, .btnH {
+  display: block;
+  margin: 20px auto;
+  font-size: 14px;
+  padding: 6px 12px;
+  background: #c00;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover, .btnH:hover { background: #900; }
+.status { text-align: center; font-weight: bold; margin-top: 10px; color: green; }
+</style>
+<div>
+  <a href="notchoose.html" class="btnH">กลับไปหน้าปฏิทิน</a>
+</div>
+</head>
+<body>
+<p class="right">
+  เอกสารแนบใบสั่งงาน<br>
+  ฝ่ายวิศวกรรมและฝึกอบรม
+</p>
+
+<h3>ข้อมูลเบื้องต้นงานการจัดแสดงหรือสาธิต</h3><br><br>
+
+<div style="margin-bottom:20px;">
+  <label>เลขที่งาน (Job Number): </label>
+  <input type="text" id="jobNumberInput" readonly>
+</div>
+
+<table>
+  <tr><th>แผนดำเนินการ</th><th>วันที่</th><th>เวลา</th></tr>
+  <tr><td>ออกเดินทางจาก Office</td><td><input type="text" id="startDateInput" readonly></td><td><input type="text" id="time1"></td></tr>
+  <tr><td>เข้าติดตั้งชุดฝึก</td><td><input type="date" id="date2"></td><td><input type="text" id="time2"></td></tr>
+  <tr><td>ส่งมอบชุดฝึก</td><td><input type="date" id="date3"></td><td><input type="text" id="time3"></td></tr>
+  <tr><td>เดินทางกลับ Office</td><td><input type="text" id="endDateInput" readonly></td><td><input type="text" id="time4"></td></tr>
+</table>
+
+<table>
+  <tr>
+    <td>แผนการเดินทาง</td>
+    <td><label><input type="checkbox" id="car_company"> รถบริษัท</label></td>
+    <td><label><input type="checkbox" id="car_sales"> รถ Sales</label></td>
+    <td><label><input type="checkbox" id="bus"> รถประจำทาง</label></td>
+    <td><label><input type="checkbox" id="plane"> เครื่องบิน</label></td>
+  </tr>
+  <tr>
+    <td>Sales ไปด้วยหรือไม่:</td>
+    <td><label><input type="checkbox" id="sales_no"> ไม่ไป</label></td>
+    <td><label><input type="checkbox" id="sales_yes"> ไป</label></td>
+    <td><label><input type="checkbox" id="sales_together"> ไปด้วยกัน</label></td>
+    <td><label><input type="checkbox" id="sales_separate"> แยกกันไป</label></td>
+  </tr>
+</table>
+
+<table>
+  <tr><td>มีบริษัทอื่นร่วมจัดแสดงในงานหรือไม่:</td>
+    <td><label><input type="checkbox" id="company_have"> มี</label></td>
+    <td><label><input type="checkbox" id="company_not_have"> ไม่มี</label></td></tr>
+  <tr><td>มีหมายกำหนดงานหรือไม่:</td>
+    <td><label><input type="checkbox" id="schedule_have"> มี(แนบ)</label></td>
+    <td><label><input type="checkbox" id="schedule_not_have"> ไม่มี</label></td></tr>
+  <tr><td>มีแผนผังขนาดพื้นที่จัดแสดงหรือไม่:</td>
+    <td><label><input type="checkbox" id="map_have"> มี(แนบ)</label></td>
+    <td><label><input type="checkbox" id="map_not_have"> ไม่มี</label></td></tr>
+  <tr><td>มีปลั๊กไฟหรือไม่:</td>
+    <td><label><input type="checkbox" id="plug_have"> มี</label></td>
+    <td><label><input type="checkbox" id="plug_not_have"> ไม่มี</label></td></tr>
+  <tr><td>มีปั๊มลมหรือจุดจ่ายลมให้หรือไม่:</td>
+    <td><label><input type="checkbox" id="air_have"> มี</label></td>
+    <td><label><input type="checkbox" id="air_not_have"> ไม่มี</label></td></tr>
+</table>
+
+<table>
+  <th colspan="4">อุปกรณ์ที่นำไปจัดแสดงหรือสาธิต</th>
+  <tr>
+    <td><label><input type="checkbox" id="MPUA"> MPU-A</label></td>
+    <td><label><input type="checkbox" id="MPUB"> MPU-B</label></td>
+    <td><label><input type="checkbox" id="MPUC"> MPU-C</label></td>
+    <td><label><input type="checkbox" id="MPUD"> MPU-D</label></td>
+  </tr>
+</table>
+
+<table>
+  <th>- ชุดแมคคาทรอนิกส์</th>
+  <td><label><input type="checkbox" id="MC_01"> MC-01</label></td>
+  <td><label><input type="checkbox" id="MC_02"> MC-02</label></td>
+  <td><label><input type="checkbox" id="MC_03"> MC-03</label></td>
+</table>
+
+<table>
+  <tr><th>PLC ยี่ห้อ</th><td><input type="text" id="PLC1"></td><th>รุ่น</th><td><input type="text" id="ver"></td></tr>
+  <tr><th>หุ่นยนต์ยี่ห้อ</th><td><input  type="text" id="BOT"></td><th>รุ่น</th><td><input type="text" id="ver2"></td></tr>
+  <tr><th>โต๊ะวางหุ่นยนต์ ขนาด</th><td colspan="3"><input type="text" id="tableSize"></td></tr>
+  <tr><th>ชุดฝึกและอุปกรณ์อื่นๆ ได้แก่</th></tr>
+  <tr><td colspan="4"><input type="text"  id="otherEquip"></td></tr>
+</table>
+
+<table>
+  <tr><th colspan="3">รูปแบบการขนย้าย</th></tr>
+  <tr>
+    <td><label><input type="checkbox" id="move_all_top"> จ้างย้ายทั้งหมด</label></td>
+    <td><label><input type="checkbox" id="move_all_bottom"> ขนย้ายเองทั้งหมด</label></td>
+    <td><label><input type="checkbox" id="move_partial"> จ้างขนย้ายบางส่วน</label></td>
+  </tr>
+</table>
+
+<table>
+  <tr><th>รายการ</th><th>จำนวน</th></tr>
+  <tr><td><input type="text" id="carry1"></td><td><input  type="text"  id="carryQty1"></td></tr>
+  <tr><td><input type="text" id="carry2"></td><td><input   type="text" id="carryQty2"></td></tr>
+  <tr><td><input type="text" id="carry3"></td><td><input  type="text" id="carryQty3"></td></tr>
+</table>
+
+<table>
+  <tr><th>ห้องที่ทำการติดตั้งชุดฝึกอยู่ตึกไหน (แผนที่)...</th></tr>
+  <tr><td><input type="text" id="roomInfo"></td></tr>
+</table>
+
+<button onclick="saveFile()">💾 บันทึกข้อมูล</button>
+<div id="statusMsg" class="status"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ✅ ดึงค่าจาก query string
+const params = new URLSearchParams(window.location.search);
+const jobNumber = params.get("job") || "";
+const start = params.get("start") || "";
+const end = params.get("end") || "";
+
+// ✅ ฟังก์ชันแปลงวันที่เป็น DD/MM/YYYY (พ.ศ.)
+function formatDateThai(dateStr) {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear() + 543;
+  return `${day}/${month}/${year}`;
+}
+
+// ✅ ฟังก์ชันแปลงจาก ISO date (YYYY-MM-DD) กลับไปเป็นวันที่ไทย
+function isoToThai(isoDate) {
+  if (!isoDate) return "";
+  const [year, month, day] = isoDate.split("-");
+  return `${parseInt(day)}/${parseInt(month)}/${parseInt(year) + 543}`;
+}
+
+// ✅ ฟังก์ชันแปลงจากวันที่ไทย (DD/MM/YYYY พ.ศ.) เป็น ISO (YYYY-MM-DD)
+function thaiToIso(thaiDate) {
+  if (!thaiDate || !thaiDate.includes("/")) return "";
+  const parts = thaiDate.split("/");
+  if (parts.length !== 3) return "";
+  const day = parts[0].padStart(2, "0");
+  const month = parts[1].padStart(2, "0");
+  const year = parseInt(parts[2]) - 543;
+  return `${year}-${month}-${day}`;
+}
+
+// ✅ ฟังก์ชันแสดงวันที่เป็นภาษาไทยบนช่อง input
+function updateThaiDateDisplay(fieldId, isoDate) {
+  if (!isoDate) return;
+  const thaiDate = isoToThai(isoDate);
+  const field = document.getElementById(fieldId);
+  field.setAttribute("data-thai-date", thaiDate);
+}
+
+// ✅ ใส่ค่าในช่อง input (แปลงเป็นวันที่ไทย)
+document.getElementById("jobNumberInput").value = jobNumber;
+document.getElementById("startDateInput").value = formatDateThai(start);
+document.getElementById("endDateInput").value = formatDateThai(end);
+
+// ✅ ฟังก์ชันดึงข้อมูลจาก Realtime Database ตาม jobNumber
+async function loadData(jobNumber) {
+  if (!jobNumber) return;
+
+  const dataRef = ref(db, `report2/${jobNumber}`);
+  const snap = await get(dataRef);
+
+  if (snap.exists()) {
+    const d = snap.val();
+
+    // ใส่ค่าลงฟอร์ม
+    time1.value = d.time1 || "";
+    
+    // ✅ แสดงวันที่ใน input type="date" (ISO format)
+    if (d.date2) {
+      if (d.date2.includes("-") && d.date2.length === 10) {
+        document.getElementById("date2").value = d.date2;
+        updateThaiDateDisplay("date2", d.date2);
+      } else if (d.date2.includes("/")) {
+        const iso = thaiToIso(d.date2);
+        document.getElementById("date2").value = iso;
+        updateThaiDateDisplay("date2", iso);
+      }
+    }
+    
+    time2.value = d.time2 || "";
+    
+    if (d.date3) {
+      if (d.date3.includes("-") && d.date3.length === 10) {
+        document.getElementById("date3").value = d.date3;
+        updateThaiDateDisplay("date3", d.date3);
+      } else if (d.date3.includes("/")) {
+        const iso = thaiToIso(d.date3);
+        document.getElementById("date3").value = iso;
+        updateThaiDateDisplay("date3", iso);
+      }
+    }
+    
+    time3.value = d.time3 || "";
+    time4.value = d.time4 || "";
+
+    // checkbox
+    for (const key of [
+      "car_company","car_sales","bus","plane",
+      "sales_no","sales_yes","sales_together","sales_separate",
+      "company_have","company_not_have",
+      "schedule_have","schedule_not_have",
+      "map_have","map_not_have",
+      "plug_have","plug_not_have",
+      "air_have","air_not_have",
+      "MPUA","MPUB","MPUC","MPUD",
+      "MC_01","MC_02","MC_03",
+      "move_all_top","move_all_bottom","move_partial"
+    ]) {
+      if (document.getElementById(key)) {
+        document.getElementById(key).checked = !!d[key];
+      }
+    }
+
+    // text fields
+    PLC1.value = d.PLC1 || "";
+    ver.value = d.ver || "";
+    BOT.value = d.BOT || "";
+    ver2.value = d.ver2 || "";
+    tableSize.value = d.tableSize || "";
+    otherEquip.value = d.otherEquip || "";
+    roomInfo.value = d.roomInfo || "";
+
+    // carry items
+    if (d.carry && d.carry.length) {
+      carry1.value = d.carry[0]?.item || "";
+      carryQty1.value = d.carry[0]?.qty || "";
+      carry2.value = d.carry[1]?.item || "";
+      carryQty2.value = d.carry[1]?.qty || "";
+      carry3.value = d.carry[2]?.item || "";
+      carryQty3.value = d.carry[2]?.qty || "";
+    }
+
+    statusMsg.textContent = "📄 โหลดข้อมูลสำเร็จ!";
+    statusMsg.style.color = "blue";
+  }
+}
+
+// ✅ ถ้ามี jobNumber → โหลดข้อมูลทันที
+if (jobNumber) loadData(jobNumber);
+
+// ✅ เพิ่ม event listener เพื่ออัพเดทแสดงวันที่ไทยเมื่อเลือกวันที่ใหม่
+document.getElementById("date2").addEventListener("change", function() {
+  updateThaiDateDisplay("date2", this.value);
+});
+
+document.getElementById("date3").addEventListener("change", function() {
+  updateThaiDateDisplay("date3", this.value);
+});
+
+// ✅ ฟังก์ชันบันทึกข้อมูล
+window.saveFile = async function() {
+  const jobNum = document.getElementById("jobNumberInput").value.trim();
+  if (!jobNum) { alert("⚠️ กรุณากรอกเลขที่งานก่อนบันทึก"); return; }
+
+  const data = {
+    jobNumber: jobNum,
+    date1: startDateInput.value, 
+    time1: time1.value,
+    date2: document.getElementById("date2").value, // บันทึกเป็น ISO format
+    time2: time2.value,
+    date3: document.getElementById("date3").value, // บันทึกเป็น ISO format
+    time3: time3.value,
+    date4: endDateInput.value, 
+    time4: time4.value,
+
+    car_company: car_company.checked,
+    car_sales: car_sales.checked,
+    bus: bus.checked,
+    plane: plane.checked,
+
+    sales_no: sales_no.checked,
+    sales_yes: sales_yes.checked,
+    sales_together: sales_together.checked,
+    sales_separate: sales_separate.checked,
+
+    company_have: company_have.checked,
+    company_not_have: company_not_have.checked,
+    schedule_have: schedule_have.checked,
+    schedule_not_have: schedule_not_have.checked,
+    map_have: map_have.checked,
+    map_not_have: map_not_have.checked,
+    plug_have: plug_have.checked,
+    plug_not_have: plug_not_have.checked,
+    air_have: air_have.checked,
+    air_not_have: air_not_have.checked,
+
+    MPUA: MPUA.checked, 
+    MPUB: MPUB.checked, 
+    MPUC: MPUC.checked, 
+    MPUD: MPUD.checked,
+    MC_01: MC_01.checked, 
+    MC_02: MC_02.checked, 
+    MC_03: MC_03.checked,
+
+    PLC1: PLC1.value, 
+    ver: ver.value,
+    BOT: BOT.value, 
+    ver2: ver2.value,
+    tableSize: tableSize.value, 
+    otherEquip: otherEquip.value,
+
+    move_all_top: move_all_top.checked,
+    move_all_bottom: move_all_bottom.checked,
+    move_partial: move_partial.checked,
+
+    carry: [
+      { item: carry1.value, qty: carryQty1.value },
+      { item: carry2.value, qty: carryQty2.value },
+      { item: carry3.value, qty: carryQty3.value }
+    ],
+
+    roomInfo: roomInfo.value,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    await set(ref(db, `report2/${jobNum}`), data);
+    statusMsg.textContent = "✅ บันทึกข้อมูลเรียบร้อยแล้ว!";
+    statusMsg.style.color = "green";
+    setTimeout(() => {
+      window.location.href = "notchoose.html";
+    }, 1000);
+  } catch (err) {
+    statusMsg.textContent = "❌ เกิดข้อผิดพลาด: " + err.message;
+    statusMsg.style.color = "red";
+  }
+};
+</script>
+
+</body>
+</html>

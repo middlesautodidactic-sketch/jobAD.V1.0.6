@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>จัดการงาน AUTODIDACTIC</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Variables ===== */
+:root {
+  --primary-color: #c00;
+  --primary-dark: #a00;
+  --primary-light: #fee;
+  --secondary-color: #444;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --text-dark: #333;
+  --border-radius: 12px;
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-hover: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ===== General Theme ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(135deg, #fff 0%, #fee 100%);
+  color: var(--text-dark);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.95);
+  padding: 8px 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logo-container img { 
+  width: 45px; 
+  height: auto;
+}
+
+header h1 {
+  flex: 1;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+header nav a {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+header nav a:hover { 
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+}
+
+/* ===== Main Layout ===== */
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(400px, 1fr) 350px 350px;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== Form Panel ===== */
+.form-container {
+  background: #fff;
+  border-radius: var(--border-radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  height: fit-content;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.form-container:hover { 
+  box-shadow: var(--shadow-hover);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid var(--primary-light);
+}
+
+.form-header h2 {
+  color: var(--primary-color);
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.form-header p {
+  color: #666;
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+
+/* ===== Form Groups ===== */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.form-group label .required {
+  color: var(--danger-color);
+  margin-left: 4px;
+}
+
+.form-group .help-text {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ===== Inputs ===== */
+.input-line {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  font-size: 15px;
+  color: var(--text-dark);
+  background: #fff;
+  transition: all 0.3s ease;
+  font-family: 'Prompt', sans-serif;
+}
+
+.input-line:focus { 
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(204,0,0,0.1);
+}
+
+.input-line::placeholder {
+  color: #999;
+}
+
+textarea.input-line { 
+  height: 100px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ===== Checkbox Group ===== */
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 2px solid #eee;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-group label:hover {
+  background: #fff;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.other-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.other-input-wrapper input[type="text"] {
+  flex: 1;
+  min-width: 120px;
+  padding: 6px 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* ===== Urgent Job Checkbox ===== */
+.urgent-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+  border: 2px solid var(--warning-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 20px 0;
+}
+
+.urgent-checkbox:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255,193,7,0.3);
+}
+
+.urgent-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #ff6b00;
+}
+
+.urgent-checkbox span {
+  font-weight: 600;
+  color: #856404;
+  font-size: 16px;
+}
+
+/* ===== Dropdown ===== */
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-btn {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-dark);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 48px;
+  align-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dropdown-btn::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #666;
+}
+
+.dropdown-btn:hover {
+  border-color: var(--primary-color);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 10;
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 8px;
+  margin-top: 4px;
+}
+
+.dropdown-content label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 400;
+}
+
+.dropdown-content label:hover { 
+  background: var(--primary-light);
+}
+
+.dropdown-content input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.selected-name {
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 16px;
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ===== Buttons ===== */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border-radius: 8px;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(204,0,0,0.2);
+  font-family: 'Prompt', sans-serif;
+}
+
+button:hover { 
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(204,0,0,0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.btn-back {
+  display: inline-block;
+  margin-top: 12px;
+  text-align: center;
+  background: #6c757d;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(108,117,125,0.2);
+}
+
+.btn-back:hover { 
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* ===== Side Panels ===== */
+.panel {
+  background: #fff;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid var(--primary-light);
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-color);
+  flex: 1;
+}
+
+.panel-header .count-badge {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.completed-panel .panel-header h3 {
+  color: var(--success-color);
+}
+
+.completed-panel .panel-header .count-badge {
+  background: var(--success-color);
+}
+
+/* ===== Event Items ===== */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-item {
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--primary-color);
+}
+
+.event-item:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  transform: translateX(4px);
+}
+
+.event-item strong {
+  display: inline-block;
+  font-size: 16px;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.event-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.event-item-row .icon {
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-urgent {
+  background: #f8d7da;
+  color: #721c24;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ===== Event Actions ===== */
+.event-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.event-actions button {
+  width: auto;
+  padding: 8px 16px;
+  margin: 0;
+  font-size: 14px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.print-btn { 
+  background: var(--secondary-color);
+  box-shadow: 0 2px 8px rgba(68,68,68,0.2);
+}
+
+.print-btn:hover { 
+  background: #2c2c2c;
+}
+
+.edit-btn { 
+  background: #007bff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+}
+
+.edit-btn:hover { 
+  background: #0056b3;
+}
+
+.delete-btn { 
+  background: var(--danger-color);
+  box-shadow: 0 2px 8px rgba(220,53,69,0.2);
+}
+
+.delete-btn:hover { 
+  background: #c82333;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.empty-state .icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* ===== Footer ===== */
+footer {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  text-align: center;
+  padding: 16px;
+  font-size: 14px;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+  margin-top: auto;
+}
+
+/* ===== Scrollbar Styling ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* ===== Responsive Design ===== */
+@media(max-width: 1200px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .form-container {
+    grid-column: 1 / -1;
+  }
+}
+
+@media(max-width: 768px) {
+  main {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  
+  header h1 {
+    font-size: 18px;
+    width: 100%;
+    order: 2;
+  }
+  
+  .logo-container {
+    order: 1;
+  }
+  
+  header nav {
+    order: 3;
+  }
+  
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-container,
+  .panel {
+    padding: 20px;
+    max-height: none;
+  }
+  
+  .event-actions {
+    flex-direction: column;
+  }
+  
+  .event-actions button {
+    width: 100%;
+  }
+}
+
+@media(max-width: 480px) {
+  header h1 {
+    font-size: 16px;
+  }
+  
+  .form-header h2 {
+    font-size: 22px;
+  }
+  
+  .input-line {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  button {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+/* ====== Custom Alert Overlay ====== */
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.custom-alert-box {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.custom-alert-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 0.6s ease;
+}
+
+.custom-alert-title {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.custom-alert-message {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.custom-alert-redirect {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-top: 1rem;
+}
+
+.custom-alert-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(192, 0, 0, 0.2);
+  border-radius: 2px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.custom-alert-progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  animation: progressBar 3s linear;
+  border-radius: 2px;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes progressBar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo-container">
+    <img src="ad_logo-Photoroom.png" alt="Logo">
+  </div>
+  <h1>📋 จัดการงาน AUTODIDACTIC</h1>
+  <nav><a href="calendar_admin.html">← กลับหน้าปฏิทิน</a></nav>
+</header>
+
+<main>
+  <!-- ========== FORM ========== -->
+  <div class="form-container">
+    <div class="form-header">
+      <h2 id="formTitle">✨ เพิ่มงานใหม่</h2>
+      <p>กรอกข้อมูลงานให้ครบถ้วนเพื่อส่งขออนุมัติ</p>
+    </div>
+    
+    <form id="eventForm">
+      <input type="hidden" id="eventId">
+
+      <div class="form-group">
+        <label>📝 หมายเลขงาน:</label>
+        <input type="text" id="jobNumber" class="input-line" placeholder="เช่น JOB-001 (ไม่บังคับ)">
+        <div class="help-text">หากไม่ระบุ ระบบจะสร้างหมายเลขอัตโนมัติ</div>
+      </div>
+
+      <div class="form-group">
+        <label>👤 คนที่สั่งงาน: <span class="required">*</span></label>
+        <div class="dropdown">
+          <button type="button" class="dropdown-btn" id="assignedByBtn">เลือกชื่อ</button>
+          <div class="dropdown-content" id="assignedByList"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>📅 วันที่สั่งงาน: <span class="required">*</span></label>
+        <input type="date" id="orderDate" class="input-line" required>
+      </div>
+
+      <div class="form-group">
+        <label>🚀 วันที่เริ่ม: <span class="required">*</span></label>
+        <input type="date" id="start" class="input-line" required>
+      </div>
+
+      <div class="form-group">
+        <label>🏁 วันที่สิ้นสุด: <span class="required">*</span></label>
+        <input type="date" id="end" class="input-line" required>
+      </div>
+
+      <div class="form-group">
+        <label>📍 สถานที่: <span class="required">*</span></label>
+        <input type="text" id="location" class="input-line" placeholder="ระบุสถานที่ปฏิบัติงาน" required>
+      </div>
+
+      <div class="form-group">
+        <label>🏷️ ลักษณะงาน: <span class="required">*</span></label>
+        <div id="jobTypeGroup" class="checkbox-group">
+          <label><input type="checkbox" value="ส่งมอบ"> ส่งมอบ</label>
+          <label><input type="checkbox" value="ฝึกอบรม"> ฝึกอบรม</label>
+          <label><input type="checkbox" value="ออกแสดงสินค้า"> ออกแสดงสินค้า</label>
+          <label><input type="checkbox" value="ตรวจเช็ค/ซ่อม"> ตรวจเช็ค/ซ่อม</label>
+          <label><input type="checkbox" value="Visit"> Visit</label>
+          <label class="other-input-wrapper">
+            <input type="checkbox" id="otherJobTypeCheck" value="อื่นๆ"> อื่นๆ:
+            <input type="text" id="otherJobTypeText" placeholder="ระบุ...">
+          </label>
+        </div>
+      </div>
+
+      <label class="urgent-checkbox">
+        <input type="checkbox" id="urgentJob">
+        <span>⚡ อนุมัติงานด่วน</span>
+      </label>
+
+      <div class="form-group">
+        <label>📄 รายละเอียดงาน: <span class="required">*</span></label>
+        <textarea id="details" class="input-line" placeholder="ใส่รายละเอียดงาน..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>👨‍💼 ผู้ติดต่อ: <span class="required">*</span></label>
+        <input type="text" id="contactPerson" class="input-line" placeholder="ชื่อผู้ติดต่อ" required>
+      </div>
+
+      <div class="form-group">
+        <label>📞 เบอร์โทรศัพท์: <span class="required">*</span></label>
+        <input type="tel" id="phoneNumber" class="input-line" placeholder="เช่น 0812345678" required>
+      </div>
+
+      <button type="submit">💾 บันทึกงาน</button>
+      <a href="calendar_admin.html" class="btn-back">← กลับไปปฏิทิน</a>
+    </form>
+  </div>
+
+  <!-- ========== ACTIVE EVENT LIST ========== -->
+  <div class="panel">
+    <div class="panel-header">
+      <h3>🔄 กำลังดำเนินการ</h3>
+      <span class="count-badge" id="activeCount">0</span>
+    </div>
+    <div class="event-list" id="eventList">
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <p>ยังไม่มีงานที่กำลังดำเนินการ</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== COMPLETED EVENT LIST ========== -->
+  <div class="panel completed-panel">
+    <div class="panel-header">
+      <h3>✅ เรียบร้อยแล้ว</h3>
+      <span class="count-badge" id="completedCount">0</span>
+    </div>
+    <div class="event-list" id="completedEventList">
+      <div class="empty-state">
+        <div class="icon">✓</div>
+        <p>ยังไม่มีงานที่เสร็จสิ้น</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2025 AUTODIDACTIC SYSTEM - All Rights Reserved
+</footer>
+
+<!-- ========== SCRIPT SECTION ========== -->
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, get, set, push, remove, update, child } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ฟังก์ชันแปลงวันที่เป็นรูปแบบ DD/MM/YYYY (พ.ศ.)
+function formatDateThai(dateStr) {
+  if (!dateStr) return "-";
+  const [year, month, day] = dateStr.split("-");
+  const buddhistYear = parseInt(year) + 543;
+  return `${day}/${month}/${buddhistYear}`;
+}
+
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("orderDate").value = today;
+
+const eventList = document.getElementById("eventList");
+const completedEventList = document.getElementById("completedEventList");
+const assignedByBtn = document.getElementById("assignedByBtn");
+const assignedByList = document.getElementById("assignedByList");
+
+async function loadEvents() {
+  eventList.innerHTML = "";
+  completedEventList.innerHTML = "";
+  
+  // ✅ ดึงชื่อผู้ใช้ที่ login
+  const currentUser = sessionStorage.getItem("userName");
+  
+  if (!currentUser) {
+    eventList.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>กรุณา Login ก่อนใช้งาน</p></div>';
+    completedEventList.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>กรุณา Login ก่อนใช้งาน</p></div>';
+    return;
+  }
+  
+  const normalizedCurrentUser = currentUser.trim().normalize('NFC');
+  console.log("👤 ผู้ใช้ปัจจุบัน:", normalizedCurrentUser);
+  
+  const eventsRef = ref(db, "events");
+  const snapshot = await get(eventsRef);
+  
+  if (!snapshot.exists()) {
+    eventList.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>ยังไม่มีงานที่กำลังดำเนินการ</p></div>';
+    completedEventList.innerHTML = '<div class="empty-state"><div class="icon">✓</div><p>ยังไม่มีงานที่เสร็จสิ้น</p></div>';
+    return;
+  }
+  
+  const events = snapshot.val();
+  let activeCount = 0;
+  let completedCount = 0;
+  
+  Object.keys(events).forEach(eventId => {
+    const data = events[eventId];
+    const isFinished = data.status === "เรียบร้อย" || data.status === "ไม่เรียบร้อย";
+    
+    // ✅ เช็คว่าผู้ใช้ปัจจุบันอยู่ใน assigners หรือไม่
+    let assigners = [];
+    if (Array.isArray(data.assigners)) {
+      assigners = data.assigners.map(name => name.trim().normalize('NFC'));
+    } else if (typeof data.assigners === 'string') {
+      assigners = data.assigners.split(',').map(name => name.trim().normalize('NFC'));
+    }
+    
+    // ✅ แสดงเฉพาะงานที่ผู้ใช้เป็นคนสั่งงาน
+    if (!assigners.includes(normalizedCurrentUser)) {
+      return;
+    }
+    
+    const div = document.createElement("div");
+    div.className = "event-item";
+    const isApproved = data.status === "อนุมัติ" || data.status === "อนุมัติด่วน";
+    const isPending = data.status === "รออนุมัติ" || data.status === "รออนุมัติด่วน";
+    const isUrgent = data.status?.includes("ด่วน");
+
+    let buttonsHTML = "";
+    let statusBadge = "";
+    
+    if (isPending) {
+      statusBadge = `<span class="status-badge ${isUrgent ? 'status-urgent' : 'status-pending'}">${data.status || "รออนุมัติ"}</span>`;
+    } else if (isApproved) {
+      statusBadge = `<span class="status-badge status-approved">${data.status}</span>`;
+    } else if (isFinished) {
+      statusBadge = `<span class="status-badge status-approved">${data.status}</span>`;
+    }
+    
+    // ✅ งานที่เสร็จสิ้นแล้ว - แสดงเฉพาะปุ่มพิมพ์
+    if (isFinished) {
+      completedCount++;
+      buttonsHTML = `
+        <div class="event-actions">
+          <button class="print-btn" onclick="printEvent('${eventId}')">🖨 พิมพ์</button>
+        </div>`;
+    }
+    // ✅ งานที่รออนุมัติ - แสดงปุ่มแก้ไข, ลบ, และพิมพ์
+    else if (isPending) {
+      activeCount++;
+      buttonsHTML = `
+        <div class="event-actions">
+          <button class="edit-btn" onclick="editEvent('${eventId}')">✏️ แก้ไข</button>
+          <button class="delete-btn" onclick="deleteEvent('${eventId}')">🗑️ ลบ</button>
+          <button class="print-btn" onclick="printEvent('${eventId}')">🖨 พิมพ์</button>
+        </div>`;
+    }
+    // ✅ งานที่อนุมัติแล้ว - แสดงเฉพาะปุ่มพิมพ์
+    else if (isApproved) {
+      activeCount++;
+      buttonsHTML = `
+        <div class="event-actions">
+          <button class="print-btn" onclick="printEvent('${eventId}')">🖨 พิมพ์</button>
+        </div>`;
+    }
+    
+    div.innerHTML = `
+      <strong>${data.jobNumber || "ไม่ระบุ"}</strong>
+      <div class="event-item-row">
+        <span class="icon">📍</span>
+        <span>${data.location}</span>
+      </div>
+      <div class="event-item-row">
+        <span class="icon">📅</span>
+        <span>วันที่สั่งงาน: ${formatDateThai(data.orderDate)}</span>
+      </div>
+      <div class="event-item-row">
+        <span class="icon">🚀</span>
+        <span>${formatDateThai(data.start)} → ${formatDateThai(data.end)}</span>
+      </div>
+      <div class="event-item-row">
+        <span class="icon">👤</span>
+        <span>${data.contactPerson || "-"} (${data.phoneNumber || "-"})</span>
+      </div>
+      <div class="event-item-row">
+        <span class="icon">🏷️</span>
+        <span>${(data.jobTypes || []).join(", ")}</span>
+      </div>
+      <div class="event-item-row">
+        <span class="icon">🧑 </span>
+        <span>${(data.assigners || []).join(", ")}</span>
+      </div>
+      <div class="event-item-row">
+        <span class="icon">📌</span>
+        <span>สถานะ: ${statusBadge}</span>
+      </div>
+      ${data.incompleteReason ? `<div class="event-item-row"><span class="icon">⚠️</span><span>เหตุผล: ${data.incompleteReason}</span></div>` : ''}
+      ${buttonsHTML}`;
+    
+    // ✅ เพิ่มเข้า list ที่เหมาะสม
+    if (isFinished) {
+      completedEventList.appendChild(div);
+    } else {
+      eventList.appendChild(div);
+    }
+  });
+  
+  // ✅ Update count badges
+  document.getElementById("activeCount").textContent = activeCount;
+  document.getElementById("completedCount").textContent = completedCount;
+  
+  // ✅ ถ้าไม่มีงาน แสดง empty state
+  if (activeCount === 0) {
+    eventList.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>ยังไม่มีงานที่กำลังดำเนินการ</p></div>';
+  }
+  
+  if (completedCount === 0) {
+    completedEventList.innerHTML = '<div class="empty-state"><div class="icon">✓</div><p>ยังไม่มีงานที่เสร็จสิ้น</p></div>';
+  }
+}
+
+window.deleteEvent = async id => {
+  if (confirm("ต้องการลบงานนี้หรือไม่?")) {
+    await remove(ref(db, `events/${id}`));
+    await loadEvents();
+  }
+}
+
+window.editEvent = async id => {
+  const eventRef = ref(db, `events/${id}`);
+  const snapshot = await get(eventRef);
+  
+  if (!snapshot.exists()) {
+    alert("ไม่พบข้อมูล");
+    return;
+  }
+  
+  const data = snapshot.val();
+  if (data.status === "อนุมัติ" || data.status === "อนุมัติด่วน") {
+    alert("ไม่สามารถแก้ไขงานที่อนุมัติแล้วได้");
+    return;
+  }
+
+  await loadNames();
+
+  document.getElementById("eventId").value = id;
+  document.getElementById("jobNumber").value = data.jobNumber || "";
+  document.getElementById("location").value = data.location;
+  document.getElementById("details").value = data.details;
+  document.getElementById("orderDate").value = data.orderDate || "";
+  document.getElementById("start").value = data.start;
+  document.getElementById("end").value = data.end;
+  document.getElementById("contactPerson").value = data.contactPerson || "";
+  document.getElementById("phoneNumber").value = data.phoneNumber || "";
+  document.getElementById("urgentJob").checked = data.isUrgent || false;
+
+  document.querySelectorAll("#jobTypeGroup input[type=checkbox]").forEach(cb => cb.checked = false);
+  document.getElementById("otherJobTypeText").value = "";
+
+  if (data.jobTypes) {
+    document.querySelectorAll("#jobTypeGroup input[type=checkbox]").forEach(cb => {
+      if (data.jobTypes.includes(cb.value)) cb.checked = true;
+    });
+    const other = data.jobTypes.find(t => !["ส่งมอบ","ฝึกอบรม","ออกแสดงสินค้า","ตรวจเช็ค/ซ่อม","Visit","อื่นๆ"].includes(t));
+    if (other) {
+      document.getElementById("otherJobTypeCheck").checked = true;
+      document.getElementById("otherJobTypeText").value = other;
+    }
+  }
+
+  assignedByList.querySelectorAll("input[type=checkbox]").forEach(cb => {
+    if ((data.assigners || []).includes(cb.value)) {
+      cb.checked = true;
+      cb.disabled = false;
+      cb.parentElement.style.opacity = 1;
+    }
+  });
+
+  updateDropdownButton(assignedByList, assignedByBtn);
+  document.getElementById("formTitle").innerText = "✏️ แก้ไขงาน";
+  
+  // Scroll to form
+  document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+};
+
+document.getElementById("eventForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const id = document.getElementById("eventId").value;
+  const jobNumber = document.getElementById("jobNumber").value.trim();
+  const location = document.getElementById("location").value.trim();
+  const details = document.getElementById("details").value.trim();
+  const orderDate = document.getElementById("orderDate").value;
+  const start = document.getElementById("start").value;
+  const end = document.getElementById("end").value;
+  const contactPerson = document.getElementById("contactPerson").value.trim();
+  const phoneNumber = document.getElementById("phoneNumber").value.trim();
+  const assigners = Array.from(assignedByList.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value);
+  const isUrgent = document.getElementById("urgentJob").checked;
+
+  if (assigners.length === 0) {
+    alert("⚠️ กรุณาเลือกคนที่สั่งงานอย่างน้อย 1 คน");
+    return;
+  }
+
+  let jobTypes = Array.from(document.querySelectorAll("#jobTypeGroup input[type=checkbox]:checked")).map(cb => cb.value);
+  if (document.getElementById("otherJobTypeCheck").checked) {
+    const otherText = document.getElementById("otherJobTypeText").value.trim();
+    if (otherText) jobTypes = jobTypes.filter(t => "อื่นๆ" !== t).concat(otherText);
+  }
+
+  if (jobTypes.length === 0) {
+    alert("⚠️ กรุณาเลือกลักษณะงานอย่างน้อย 1 รายการ");
+    return;
+  }
+
+  try {
+    // ตรวจสอบหมายเลขงานซ้ำ
+    if (jobNumber) {
+      const eventsRef = ref(db, "events");
+      const snapshot = await get(eventsRef);
+      
+      if (snapshot.exists()) {
+        const events = snapshot.val();
+        const duplicate = Object.keys(events).find(key => {
+          return events[key].jobNumber === jobNumber && key !== id;
+        });
+        
+        if (duplicate) {
+          alert(`⚠️ หมายเลขงาน "${jobNumber}" ซ้ำกับงานที่มีอยู่แล้ว!\nกรุณาเปลี่ยนหมายเลขงานใหม่`);
+          return;
+        }
+      }
+    }
+
+    const eventData = {
+      jobNumber, 
+      location, 
+      details, 
+      orderDate, 
+      start, 
+      end, 
+      assigners, 
+      jobTypes, 
+      contactPerson, 
+      phoneNumber,
+      isUrgent: isUrgent,
+    };
+
+    if (id) {
+      await update(ref(db, `events/${id}`), {
+        ...eventData,
+        status: eventData.isUrgent ? "รออนุมัติด่วน" : "รออนุมัติ"
+      });
+      alert("✅ แก้ไขงานเรียบร้อยแล้ว");
+    } else {
+      const newEventRef = push(ref(db, "events"));
+      await set(newEventRef, {
+        ...eventData,
+        status: eventData.isUrgent ? "รออนุมัติด่วน" : "รออนุมัติ"
+      });
+      alert("✅ บันทึกงานเรียบร้อยแล้ว");
+    }
+
+    await clearFormAfterSave();
+    loadEvents();
+  } catch (err) {
+    console.error(err);
+    alert("❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+  }
+});
+
+function updateDropdownButton(listEl, btnEl){
+  const selected = Array.from(listEl.querySelectorAll("input[type=checkbox]:checked")).map(cb=>cb.value);
+  btnEl.innerHTML = selected.map(n=>`<span class="selected-name">${n}</span>`).join(" ") || "เลือกชื่อ";
+}
+
+assignedByBtn.addEventListener("click", (e)=> {
+  e.stopPropagation();
+  assignedByList.style.display = assignedByList.style.display==="block"?"none":"block";
+});
+
+assignedByList.addEventListener("change", () => {
+  updateDropdownButton(assignedByList, assignedByBtn);
+  assignedByList.style.display = "none";
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".dropdown")) {
+    assignedByList.style.display = "none";
+  }
+});
+
+async function loadNames() {
+  assignedByList.innerHTML = "";
+
+  const usersRef = ref(db, "users");
+  const snapshot = await get(usersRef);
+  
+  if (!snapshot.exists()) return;
+  
+  const users = snapshot.val();
+  Object.keys(users).forEach(userId => {
+    const user = users[userId];
+    if (user.position === "sales") {
+      const name = user.name;
+      assignedByList.innerHTML += `
+        <label>
+          <span>${name}</span>
+          <input type="checkbox" value="${name}">
+        </label>`;
+    }
+  });
+
+  updateDropdownButton(assignedByList, assignedByBtn);
+}
+
+loadEvents();
+loadNames();
+
+function loadNameFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let nameFromURL = urlParams.get('name');
+  
+  // Session storage checks
+const userId = sessionStorage.getItem("userId");
+const userName = sessionStorage.getItem("userName");
+const userPosition = sessionStorage.getItem("userPosition");
+
+// ✅ เพิ่มโค้ดตรงนี้ - ตรวจสอบการ login
+if (!userId || !userName) {
+  // สร้าง custom alert
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-alert-overlay';
+  
+  overlay.innerHTML = `
+    <div class="custom-alert-box">
+      <div class="custom-alert-icon">⚠️</div>
+      <h2 class="custom-alert-title">กรุณาเข้าสู่ระบบ</h2>
+      <p class="custom-alert-message">กรุณาเข้าสู่ระบบก่อนเข้าใช้งาน</p>
+      <p class="custom-alert-redirect">กำลังนำคุณกลับไปหน้าหลัก...</p>
+      <div class="custom-alert-progress">
+        <div class="custom-alert-progress-bar"></div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 3000);
+  
+  throw new Error('Not logged in');
+}
+
+  if (!nameFromURL) return;
+  
+  nameFromURL = nameFromURL.trim().normalize('NFC');
+  
+  const selectName = () => {
+    const checkboxes = assignedByList.querySelectorAll('input[type="checkbox"]');
+    
+    if (checkboxes.length === 0) return false;
+    
+    let found = false;
+    checkboxes.forEach(cb => {
+      const cbValue = cb.value.trim().normalize('NFC');
+      if (cbValue === nameFromURL) {
+        cb.checked = true;
+        found = true;
+      }
+    });
+    
+    if (found) {
+      updateDropdownButton(assignedByList, assignedByBtn);
+    }
+    
+    return found;
+  };
+  
+  setTimeout(selectName, 1000);
+  setTimeout(selectName, 1500);
+  setTimeout(selectName, 2000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(loadNameFromURL, 100);
+});
+
+loadNameFromURL();
+
+document.querySelectorAll('#jobTypeGroup input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const selected = Array.from(document.querySelectorAll('#jobTypeGroup input[type="checkbox"]:checked'))
+      .map(cb => cb.value);
+
+    const otherText = document.getElementById("otherJobTypeText").value.trim();
+    if (document.getElementById("otherJobTypeCheck").checked && otherText) {
+      selected.push(otherText);
+    }
+
+    localStorage.setItem('savedJobTypes', JSON.stringify(selected));
+  });
+});
+
+document.getElementById("otherJobTypeText").addEventListener("input", () => {
+  const otherCheck = document.getElementById("otherJobTypeCheck");
+  if (otherCheck.checked) {
+    const selected = Array.from(document.querySelectorAll('#jobTypeGroup input[type="checkbox"]:checked'))
+      .map(cb => cb.value);
+
+    const otherText = document.getElementById("otherJobTypeText").value.trim();
+    if (otherText) selected.push(otherText);
+
+    localStorage.setItem('savedJobTypes', JSON.stringify(selected));
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = JSON.parse(localStorage.getItem('savedJobTypes') || '[]');
+  if (saved.length > 0) {
+    document.querySelectorAll('#jobTypeGroup input[type="checkbox"]').forEach(cb => {
+      if (saved.includes(cb.value)) cb.checked = true;
+    });
+    const knownTypes = ["ส่งมอบ", "ฝึกอบรม", "ออกแสดงสินค้า", "ตรวจเช็ค/ซ่อม", "Visit", "อื่นๆ"];
+    const other = saved.find(v => !knownTypes.includes(v));
+    if (other) {
+      document.getElementById("otherJobTypeCheck").checked = true;
+      document.getElementById("otherJobTypeText").value = other;
+    }
+  }
+});
+
+function saveFormToLocalStorage() {
+  const formData = {
+    jobNumber: document.getElementById("jobNumber").value.trim(),
+    location: document.getElementById("location").value.trim(),
+    details: document.getElementById("details").value.trim(),
+    orderDate: document.getElementById("orderDate").value,
+    start: document.getElementById("start").value,
+    end: document.getElementById("end").value,
+    contactPerson: document.getElementById("contactPerson").value.trim(),
+    phoneNumber: document.getElementById("phoneNumber").value.trim(),
+    assigners: Array.from(assignedByList.querySelectorAll("input[type=checkbox]:checked")).map(cb => cb.value),
+    jobTypes: Array.from(document.querySelectorAll('#jobTypeGroup input[type="checkbox"]:checked')).map(cb => cb.value),
+    otherJobTypeText: document.getElementById("otherJobTypeText").value.trim(),
+    isUrgent: document.getElementById("urgentJob").checked
+  };
+  localStorage.setItem("eventFormData", JSON.stringify(formData));
+}
+
+function loadFormFromLocalStorage() {
+  const saved = JSON.parse(localStorage.getItem("eventFormData") || "{}");
+  if (!saved || Object.keys(saved).length === 0) return;
+
+  document.getElementById("jobNumber").value = saved.jobNumber || "";
+  document.getElementById("location").value = saved.location || "";
+  document.getElementById("details").value = saved.details || "";
+  document.getElementById("orderDate").value = saved.orderDate || "";
+  document.getElementById("start").value = saved.start || "";
+  document.getElementById("end").value = saved.end || "";
+  document.getElementById("contactPerson").value = saved.contactPerson || "";
+  document.getElementById("phoneNumber").value = saved.phoneNumber || "";
+  document.getElementById("urgentJob").checked = saved.isUrgent || false; 
+
+  document.querySelectorAll('#jobTypeGroup input[type="checkbox"]').forEach(cb => {
+    cb.checked = saved.jobTypes?.includes(cb.value) || false;
+  });
+  if (saved.otherJobTypeText) {
+    document.getElementById("otherJobTypeCheck").checked = true;
+    document.getElementById("otherJobTypeText").value = saved.otherJobTypeText;
+  }
+
+  assignedByList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = saved.assigners?.includes(cb.value) || false;
+  });
+  updateDropdownButton(assignedByList, assignedByBtn);
+}
+
+document.querySelectorAll('#eventForm input, #eventForm textarea').forEach(el => {
+  el.addEventListener('input', saveFormToLocalStorage);
+});
+document.querySelectorAll('#eventForm input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', saveFormToLocalStorage);
+});
+
+window.addEventListener('DOMContentLoaded', loadFormFromLocalStorage);
+
+async function clearFormAfterSave() {
+  localStorage.removeItem("eventFormData");
+  localStorage.removeItem("savedJobTypes");
+  localStorage.removeItem("selectedAssigners");
+
+  const form = document.getElementById("eventForm");
+  form.reset();
+
+  document.getElementById("eventId").value = "";
+  document.getElementById("otherJobTypeText").value = "";
+
+  document.querySelectorAll("#jobTypeGroup input[type=checkbox]").forEach(cb => cb.checked = false);
+  document.querySelectorAll(".dropdown-content input[type=checkbox]").forEach(cb => cb.checked = false);
+
+  document.getElementById("assignedByBtn").innerText = "เลือกชื่อ";
+  document.getElementById("formTitle").innerText = "✨ เพิ่มงานใหม่";
+  
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("orderDate").value = today;
+}
+
+function saveNamesSelection() {
+  const selectedAssigners = Array.from(assignedByList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+  localStorage.setItem("selectedAssigners", JSON.stringify(selectedAssigners));
+}
+
+function loadNamesSelection() {
+  const savedAssigners = JSON.parse(localStorage.getItem("selectedAssigners") || "[]");
+
+  assignedByList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = savedAssigners.includes(cb.value);
+  });
+
+  updateDropdownButton(assignedByList, assignedByBtn);
+}
+
+assignedByList.addEventListener('change', () => {
+  saveNamesSelection();
+  updateDropdownButton(assignedByList, assignedByBtn);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(loadNamesSelection, 1000);
+});
+
+function goToReportPage(page) {
+  const jobNumber = document.getElementById("jobNumber").value.trim() || "ไม่ระบุ";
+  const start = document.getElementById("start").value;
+  const end = document.getElementById("end").value;
+
+  if (!start || !end) {
+    alert("กรุณากรอกวันที่เริ่มและวันที่สิ้นสุดก่อน");
+    return;
+  }
+
+  const url = `${page}?job=${encodeURIComponent(jobNumber)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+  window.location.href = url;
+}
+
+document.querySelector('input[value="ส่งมอบ"]')?.addEventListener('change', (e) => {
+  if (e.target.checked) goToReportPage("report_send.html");
+});
+document.querySelector('input[value="ฝึกอบรม"]')?.addEventListener('change', (e) => {
+  if (e.target.checked) goToReportPage("seereport4.html");
+});
+document.querySelector('input[value="ออกแสดงสินค้า"]')?.addEventListener('change', (e) => {
+  if (e.target.checked) goToReportPage("seereport2.html");
+});
+document.querySelector('input[value="ตรวจเช็ค/ซ่อม"]')?.addEventListener('change', (e) => {
+  if (e.target.checked) goToReportPage("seereport3.html");
+});
+
+window.printEvent = async (id) => {
+  const eventRef = ref(db, `events/${id}`);
+  const snapshot = await get(eventRef);
+
+  if (!snapshot.exists()) {
+    alert("ไม่พบข้อมูลงาน");
+    return;
+  }
+
+  const jobNumber = snapshot.val().jobNumber || "ไม่ระบุ";
+
+  const url = new URL("report.html", window.location.href);
+  url.searchParams.set("job", jobNumber);
+
+  window.open(url, "_blank");
+};
+
+</script>
+</body>
+</html>

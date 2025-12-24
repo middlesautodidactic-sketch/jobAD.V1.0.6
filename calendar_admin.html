@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>📅 ปฏิทินงาน (Admin)</title>
+
+<!-- FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  color: #2d3748;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ====== Header ====== */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #c00;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ====== Sidebar ====== */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 320px;
+  height: 100%;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  color: #fff;
+  padding: 2rem;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 150;
+  overflow-y: auto;
+}
+
+#sidebar.open {
+  left: 0;
+}
+
+#sidebar h2 {
+  margin-top: 60px;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.user-card .user-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-card .user-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}
+
+.user-card #displayName {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+#sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+#sidebar a:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(8px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+#closeSidebarBtn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+#closeSidebarBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+#sidebarOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 140;
+  transition: opacity 0.3s ease;
+}
+
+#sidebarOverlay.show {
+  display: block;
+}
+
+#openSidebarBtn {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  border: none;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(192, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#openSidebarBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(192, 0, 0, 0.6);
+}
+
+/* ====== Search Bar ====== */
+#searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem auto;
+  max-width: 800px;
+  padding: 0 1rem;
+  flex-wrap: wrap;
+}
+
+#jobSearch {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: 'Prompt', sans-serif;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+}
+
+#jobSearch:focus {
+  outline: none;
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+#btnSearch, #btnReport {
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Prompt', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#btnSearch {
+  background: rgba(255, 255, 255, 0.95);
+  color: #c00;
+}
+
+#btnSearch:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+#btnReport {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+#btnReport:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ====== Calendar ====== */
+#calendar {
+  width: 95%;
+  max-width: 1400px;
+  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+#calendar:hover {
+  transform: translateY(-4px);
+}
+
+.fc .fc-toolbar-title {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.fc .fc-button-primary {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.fc .fc-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(192, 0, 0, 0.4);
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background: linear-gradient(135deg, #a00 0%, #c00 100%);
+}
+
+.fc .fc-daygrid-event {
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin: 2px 0;
+  border-left: 4px solid;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  overflow: visible;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.fc .fc-daygrid-event:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.fc .fc-daygrid-day-frame {
+  min-height: 120px !important;
+}
+
+.fc .fc-daygrid-day-events {
+  min-height: 100px;
+}
+
+/* ====== Modal ====== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 200;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  overflow: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 2.5rem;
+  border-radius: 24px;
+  max-width: 600px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal h3 {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.modal p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.modal p strong {
+  color: #c00;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.modal button {
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Prompt', sans-serif;
+  margin: 0.25rem;
+}
+
+.modal button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#closeModal {
+  background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+  color: #fff;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+#editJobBtn {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  color: #fff;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* ====== Footer ====== */
+footer {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  color: #4a5568;
+  text-align: center;
+  padding: 1rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  border-top: 2px solid #c00;
+  font-size: 0.875rem;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 768px) {
+  header {
+    padding: 1rem;
+  }
+
+  .header-title {
+    font-size: 1.25rem;
+  }
+
+  #calendar {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  #sidebar {
+    width: 280px;
+  }
+
+  #searchBar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  #jobSearch, #btnSearch, #btnReport {
+    width: 100%;
+  }
+
+  .modal-content {
+    margin: 10% auto;
+    padding: 1.5rem;
+    width: 95%;
+  }
+}
+
+/* ====== Loading Animation ====== */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(192, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top-color: #c00;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ====== Custom Alert Overlay ====== */
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.custom-alert-box {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.custom-alert-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 0.6s ease;
+}
+
+.custom-alert-title {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.custom-alert-message {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.custom-alert-redirect {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-top: 1rem;
+}
+
+.custom-alert-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(192, 0, 0, 0.2);
+  border-radius: 2px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.custom-alert-progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  animation: progressBar 3s linear;
+  border-radius: 2px;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes progressBar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">📅 ปฏิทินงาน (SALES & ADMIN)</div>
+  <button id="openSidebarBtn">☰</button>
+</header>
+
+<div id="sidebar">
+  <button id="closeSidebarBtn">✕</button>
+  
+  <div class="logo-container" style="text-align: center; margin-bottom: 1rem;">
+    <img src="ad_logo-Photoroom.png" style="width: 80px; height: auto; background: rgba(255,255,255,0.9); padding: 8px; border-radius: 12px;">
+  </div>
+  
+  <div class="user-card">
+    <div class="user-icon">👤</div>
+    <div class="user-label">ผู้ใช้งาน</div>
+    <div id="displayName">Loading...</div>
+  </div>
+  
+  <a href="#" id="navAddJob">➕ เพิ่มงาน</a>
+  <a href="adminV2.html">📋 จัดการระบบ</a>
+  <a href="index.html">🚪 กลับไปหน้าหลัก</a>
+</div>
+
+<div id="sidebarOverlay"></div>
+
+<!-- Search Bar -->
+<div id="searchBar">
+  <input type="text" id="jobSearch" placeholder="🔍 ค้นหาเลขที่งาน (Job Number)">
+  <button id="btnSearch">ค้นหา</button>
+  <button id="btnReport">ดูรายงาน</button>
+</div>
+
+<div id="calendar"></div>
+
+<!-- Modal สำหรับแสดงรายละเอียดงาน -->
+<div id="eventModal" class="modal">
+  <div class="modal-content">
+    <h3>รายละเอียดงาน</h3>
+    <p><strong>ชื่อผู้ปฏิบัติงาน:</strong> <span id="modalTitle"></span></p>
+    <p><strong>เลขงาน:</strong> <span id="modalJobNumber"></span></p>
+    <p><strong>ลักษณะงาน:</strong> <span id="modalJobTypes"></span></p>
+    <p><strong>สถานที่:</strong> <span id="modalLocation"></span></p>
+    <p><strong>วิธีการเดินทาง:</strong> <span id="modalHowto"></span></p>
+    <p><strong>วันที่เริ่ม:</strong> <span id="modalStart"></span></p>
+    <p><strong>วันที่สิ้นสุด:</strong> <span id="modalEnd"></span></p>
+    <p><strong>รายละเอียด:</strong> <span id="modalDetails"></span></p>
+    <p><strong>ผู้สั่งงาน:</strong> <span id="modalAssignedBy"></span></p>
+    <p><strong>สถานะ:</strong> <span id="modalStatus"></span></p>
+    <p><strong>เหตุผลที่ไม่เรียบร้อย:</strong> <span id="modalIncompleteReason"></span></p>
+    <p><strong>หมายเหตุ:</strong> <span id="modalRemark"></span></p>
+
+    <button id="editJobBtn">✏️ แก้ไขงาน</button>
+    <button id="closeModal">ปิด</button>
+  </div>
+</div>
+
+<footer>&copy; 2025 ระบบจองบุคคลออกปฏิบัติงาน | AUTODIDACTIC</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+
+// ✅ รับข้อมูลจาก URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+let userName = urlParams.get('name');
+let userId = urlParams.get('userId');
+let userPosition = urlParams.get('position');
+
+// ถ้าไม่มีใน URL ให้ลองดึงจาก sessionStorage
+if (!userName) {
+  userName = sessionStorage.getItem('userName');
+  userId = sessionStorage.getItem('userId');
+  userPosition = sessionStorage.getItem('userPosition');
+}
+// ตรวจสอบการ login
+if (!userName && !sessionStorage.getItem('userName')) {
+  // สร้าง custom alert
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-alert-overlay';
+  
+  overlay.innerHTML = `
+    <div class="custom-alert-box">
+      <div class="custom-alert-icon">⚠️</div>
+      <h2 class="custom-alert-title">กรุณาเข้าสู่ระบบ</h2>
+      <p class="custom-alert-message">กรุณาเข้าสู่ระบบก่อนเข้าใช้งาน</p>
+      <p class="custom-alert-redirect">กำลังนำคุณกลับไปหน้าหลัก...</p>
+      <div class="custom-alert-progress">
+        <div class="custom-alert-progress-bar"></div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 3000);
+  
+  throw new Error('Not logged in');
+}
+// แสดงชื่อผู้ใช้
+if (userName) {
+  document.getElementById('displayName').textContent = userName;
+  // เก็บลง sessionStorage สำหรับใช้ต่อ
+  sessionStorage.setItem('userName', userName);
+  if (userId) sessionStorage.setItem('userId', userId);
+  if (userPosition) sessionStorage.setItem('userPosition', userPosition);
+} else {
+  document.getElementById('displayName').textContent = 'Guest';
+}
+
+// ✅ อัพเดท header title ตาม position
+const headerTitleElement = document.querySelector('.header-title');
+if (userPosition === 'admin') {
+  headerTitleElement.textContent = '📅 ปฏิทินงาน (ADMIN)';
+} else if (userPosition === 'sales') {
+  headerTitleElement.textContent = '📅 ปฏิทินงาน (SALES)';
+} else {
+  headerTitleElement.textContent = '📅 ปฏิทินงาน (SALES & ADMIN)';
+}
+if (userPosition === 'sales') {
+  const adminLink = document.querySelector('#sidebar a[href="adminV2.html"]');
+  if (adminLink) {
+    adminLink.style.display = 'none';
+  }
+}
+
+// ✅ ฟังก์ชันสร้าง URL พร้อมชื่อผู้ใช้
+function createURLWithUser(baseUrl, additionalParams = {}) {
+  const params = new URLSearchParams({
+    name: userName || 'Guest',
+    userId: userId || '',
+    position: userPosition || '',
+    ...additionalParams
+  });
+  return `${baseUrl}?${params.toString()}`;
+}
+
+// ✅ เมื่อคลิกปุ่ม "เพิ่มงาน" ส่งชื่อไปด้วย
+document.getElementById('navAddJob').addEventListener('click', (e) => {
+  e.preventDefault();
+  window.location.href = createURLWithUser('notchoose.html');
+});
+
+// Sidebar toggle
+document.getElementById('openSidebarBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+});
+
+document.getElementById('closeSidebarBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+});
+
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+});
+
+// ✅ ฟังก์ชันบวก 2 วันสำหรับแสดงในปฏิทินให้ครบ
+function addOneDayForCalendar(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  d.setDate(d.getDate() + 2);
+  return d.toISOString().split("T")[0];
+}
+
+// ✅ ฟังก์ชันแปลงวันที่เป็นรูปแบบไทย
+function formatDateThai(dateStr) {
+  if (!dateStr || dateStr === "-") return "-";
+  try {
+    const date = new Date(dateStr + "T00:00:00");
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear() + 543;
+    return `${day}-${month}-${year}`;
+  } catch (err) {
+    return dateStr;
+  }
+}
+
+// ตัวแปรเก็บ event ID ปัจจุบันที่เปิดใน Modal
+let currentEventId = null;
+
+document.addEventListener("DOMContentLoaded", async function() {
+  const calendarEl = document.getElementById("calendar");
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: "th",
+    initialView: window.innerWidth < 600 ? "listWeek" : "dayGridMonth",
+    headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,dayGridWeek,listWeek"
+    },
+    eventContent: function(arg) {
+      const data = arg.event.extendedProps;
+      const el = document.createElement("div");
+
+      if (data.type === "leave") {
+        el.innerHTML = `<div style="background:#E3F2FD;border-left:5px solid #2196F3;padding:8px;border-radius:8px;">
+          <strong>🏖 ${arg.event.title}</strong><br><small>เหตุผล: ${data.reason||'-'}</small></div>`;
+      } else if (data.type === "holiday") {
+        el.innerHTML = `<div style="background:#FF9800;border-radius:8px;padding:8px;color:#fff;text-align:center;">🎉 ${arg.event.title}</div>`;
+      } else {
+        let acknowledgeLabel = "";
+        if (data.status !== "เรียบร้อย" && data.status !== "ไม่เรียบร้อย") {
+          // นับจำนวนคนทั้งหมดในงาน
+          let workersList = [];
+          if (arg.event.title && typeof arg.event.title === 'string') {
+            workersList = arg.event.title.split(",").map(name => name.trim()).filter(name => name.length > 0);
+          }
+          const totalWorkers = workersList.length;
+          
+          // นับจำนวนคนที่รับทราบแล้ว
+          let acknowledgedList = [];
+          if (data.acknowledgedBy) {
+            if (Array.isArray(data.acknowledgedBy)) {
+              acknowledgedList = data.acknowledgedBy.map(name => name.trim().normalize('NFC'));
+            } else if (typeof data.acknowledgedBy === 'string' && data.acknowledgedBy.trim() !== '') {
+              acknowledgedList = data.acknowledgedBy.split(",").map(name => name.trim().normalize('NFC'));
+            }
+          }
+          
+          // สร้างวงกลมและเครื่องหมายถูก
+          let circles = "";
+          for (let i = 0; i < totalWorkers; i++) {
+            if (i < acknowledgedList.length) {
+              circles += `<span style="display:inline-block;width:16px;height:16px;background:#4CAF50;border-radius:50%;margin:0 2px;text-align:center;line-height:16px;color:#fff;font-size:10px;">✓</span>`;
+            } else {
+              circles += `<span style="display:inline-block;width:16px;height:16px;background:rgba(255,255,255,0.3);border:2px solid #fff;border-radius:50%;margin:0 2px;"></span>`;
+            }
+          }
+          
+          acknowledgeLabel = circles;
+        }
+        
+        const locationDisplay = data.location || "-";
+        const howtoDisplay = data.howto ? ` (${data.howto})` : "";
+        
+        el.innerHTML = `<div style="position:relative;width:100%;">
+            <strong>${arg.event.title}</strong>
+            </div><small>🧰 ${data.jobNumber || "-"}</small><br><small>📍 ${locationDisplay}${howtoDisplay}</small><br><small>🧰 ${data.jobTypes || "-"}</small><br><small>📌 ${data.status || "-"} ${acknowledgeLabel}</small>`;
+      }
+
+      return { domNodes: [el] };
+    },
+    eventClick: function(info) {
+      const data = info.event.extendedProps;
+      
+      // ✅ แสดง Alert สำหรับวันลา
+      if (data.type === "leave") {
+        alert(`🏖 ข้อมูลวันลา\n\nชื่อ: ${info.event.title}\nวันที่: ${formatDateThai(data.realStart) || info.event.startStr} → ${formatDateThai(data.realEnd) || '-'}\nเหตุผล: ${data.reason || '-'}`);
+        return;
+      }
+      
+      // ✅ แสดง Alert สำหรับวันหยุด
+      if (data.type === "holiday") {
+        alert(`🎉 วันหยุด\n\n${info.event.title}\nวันที่: ${formatDateThai(data.realDate) || info.event.startStr}`);
+        return;
+      }
+
+      // ✅ แสดง Modal สำหรับงานปกติ
+      currentEventId = info.event.id;
+
+      let titleText = info.event.title;
+      if (data.acknowledgedBy && Array.isArray(data.acknowledgedBy) && data.acknowledgedBy.length > 0) {
+        titleText += ` (รับทราบโดย: ${data.acknowledgedBy.join(", ")})`;
+      } else if (data.acknowledgedBy && typeof data.acknowledgedBy === 'string' && data.acknowledgedBy.trim() !== '') {
+        titleText += ` (รับทราบโดย: ${data.acknowledgedBy})`;
+      } else if (data.acknowledged) {
+        titleText += " (รับทราบแล้ว)";
+      }
+      
+      document.getElementById("modalTitle").textContent = titleText;
+      document.getElementById("modalJobNumber").textContent = data.jobNumber || "-";
+      document.getElementById("modalJobTypes").textContent = data.jobTypes || "-";
+      document.getElementById("modalLocation").textContent = data.location || "-";
+      document.getElementById("modalHowto").textContent = data.howto || "-";
+      document.getElementById("modalStart").textContent = formatDateThai(data.realStart);
+      document.getElementById("modalEnd").textContent = formatDateThai(data.realEnd);
+      document.getElementById("modalDetails").textContent = data.details || "-";
+      document.getElementById("modalAssignedBy").textContent = data.assignedBy || "-";
+      document.getElementById("modalStatus").textContent = data.status || "-";
+      document.getElementById("modalIncompleteReason").textContent = data.incompleteReason || "-";
+      document.getElementById("modalRemark").textContent = data.remark || "-";
+
+      document.getElementById("eventModal").style.display = "block";
+    },
+    windowResize: function() {
+      if(window.innerWidth < 600){
+        calendar.changeView('listWeek');
+      } else {
+        calendar.changeView('dayGridMonth');
+      }
+    }
+  });
+
+  const allEvents = [];
+
+  try {
+    // ✅ อ่านข้อมูล events จาก Realtime Database
+    const eventsRef = ref(db, "events");
+    const eventsSnapshot = await get(eventsRef);
+
+    // ✅ อ่านข้อมูล leaves จาก Realtime Database
+    const leavesRef = ref(db, "Days/leaves");
+    const leavesSnapshot = await get(leavesRef);
+
+    // ✅ อ่านข้อมูล holidays จาก Realtime Database
+    const holidaysRef = ref(db, "Days/holidays");
+    const holidaysSnapshot = await get(holidaysRef);
+
+    function addOneDay(dateStr){
+      if(!dateStr) return "";
+      const d = new Date(dateStr);
+      d.setDate(d.getDate()+1);
+      return d.toISOString().split("T")[0];
+    }
+
+    // ✅ ประมวลผล events
+    if (eventsSnapshot.exists()) {
+      const events = eventsSnapshot.val();
+      Object.keys(events).forEach(eventId => {
+        const data = events[eventId];
+        let color = "gray";
+        if(data.status==="อนุมัติ") color="#E3C565";
+        else if (data.status === "อนุมัติด่วน") color = "#b23400";
+        else if(data.status==="เรียบร้อย") color="green";
+        else if(data.status==="ไม่เรียบร้อย") color="darkred";
+
+        allEvents.push({
+          id: eventId,
+          title: Array.isArray(data.workers) ? data.workers.join(", ") : (data.workers || "-"),
+          start: data.start || "",
+          end: data.end ? addOneDayForCalendar(data.end) : undefined,
+          location: data.location || "",
+          howto: data.howto || "",
+          assignedBy: Array.isArray(data.assigners) ? data.assigners.join(", ") : (data.assigners || "-"),
+          jobNumber: data.jobNumber || "-",
+          jobTypes: Array.isArray(data.jobTypes) ? data.jobTypes.join(", ") : (data.jobTypes || "-"),
+          details: data.details || "-",
+          status: data.status || "รออนุมัติ",
+          incompleteReason: data.incompleteReason || "",
+          remark: data.remark || "",
+          realStart: data.start || "-",
+          realEnd: data.end || "-",
+          acknowledged: data.acknowledged || false,
+          acknowledgedBy: data.acknowledgedBy || "",
+          backgroundColor: color,
+          borderColor: color,
+          textColor: "#fff",
+          type: "event",
+          allDay: true
+        });
+      });
+    }
+
+    // ✅ ประมวลผล leaves
+    if (leavesSnapshot.exists()) {
+      const leaves = leavesSnapshot.val();
+      Object.keys(leaves).forEach(leaveId => {
+        const data = leaves[leaveId];
+        allEvents.push({
+          id: "leave-" + leaveId,
+          title: data.name||"-",
+          start: data.start||"",
+          end: addOneDay(data.end),
+          realStart: data.start || "",
+          realEnd: data.end || "",
+          backgroundColor: "#2196F3",
+          borderColor: "#2196F3",
+          textColor: "#000",
+          reason: data.reason||"",
+          type: "leave",
+          allDay: true
+        });
+      });
+    }
+
+    // ✅ ประมวลผล holidays
+    if (holidaysSnapshot.exists()) {
+      const holidays = holidaysSnapshot.val();
+      Object.keys(holidays).forEach(holidayId => {
+        const data = holidays[holidayId];
+        allEvents.push({
+          id: "holiday-" + holidayId,
+          title: data.name || "วันหยุด",
+          start: data.date || "",
+          end: data.date || "",
+          realDate: data.date || "",
+          backgroundColor: "#FF9800",
+          borderColor: "#FF9800",
+          textColor: "#fff",
+          type: "holiday",
+          allDay: true,
+          reason: data.reason || ""
+        });
+      });
+    }
+
+    calendar.addEventSource(allEvents);
+    calendar.render();
+
+    // 🔹 ปุ่มค้นหา
+    document.getElementById("btnSearch").addEventListener("click", ()=>{
+      const keyword = document.getElementById("jobSearch").value.trim().toLowerCase();
+      const filtered = keyword 
+        ? allEvents.filter(e => e.jobNumber && e.jobNumber.toLowerCase().includes(keyword)) 
+        : allEvents;
+
+      if(filtered.length === 0){
+        alert("❌ ไม่พบงานนี้");
+        return;
+      }
+
+      calendar.removeAllEvents();
+      calendar.addEventSource(filtered);
+      calendar.changeView(window.innerWidth < 600 ? "listWeek" : "dayGridMonth");
+
+      const firstEvent = filtered[0];
+      if(firstEvent.start){
+        calendar.gotoDate(firstEvent.start);
+      }
+    });
+
+    // 🔹 ปุ่มดูรายงาน
+    document.getElementById("btnReport").addEventListener("click", ()=>{
+      const keyword = document.getElementById("jobSearch").value.trim();
+      if(!keyword){
+        alert("กรุณากรอกเลขที่งานก่อนดูรายงาน");
+        return;
+      }
+      const event = allEvents.find(e => e.jobNumber && e.jobNumber.toLowerCase() === keyword.toLowerCase());
+      if(!event){
+        alert("❌ ไม่พบงานนี้");
+        return;
+      }
+      window.location.href = `seereport.html?job=${encodeURIComponent(event.jobNumber)}`;
+    });
+
+  } catch(err){
+    console.error("❌ โหลดข้อมูลจาก Firebase ไม่สำเร็จ:", err);
+    calendar.render();
+  }
+
+  // ✅ ปุ่มปิด Modal
+  document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("eventModal").style.display = "none";
+    currentEventId = null;
+  });
+
+  // ✅ ปุ่มแก้ไขงาน (เปิดหน้า notchoose.html พร้อม event ID)
+  document.getElementById("editJobBtn").addEventListener("click", () => {
+    if (currentEventId) {
+      window.location.href = createURLWithUser('notchoose.html', { id: currentEventId });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

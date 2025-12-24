@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>📊 สรุปจำนวนครั้งที่ออกปฏิบัติงานรายเดือน (แยกตามบุคคล)</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: linear-gradient(135deg, #c00 0%, #a00 100%);
+  color: #fff;
+  padding: 24px 20px;
+  box-shadow: 0 4px 20px rgba(204, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: pulse 15s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icon {
+  font-size: 42px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.header-text h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.header-text p {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.container {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  width: 100%;
+}
+
+.nav-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #c00 0%, #a00 100%);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(204, 0, 0, 0.3);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #c00;
+  border: 2px solid #c00;
+}
+
+.btn-secondary:hover {
+  background: #c00;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(204, 0, 0, 0.3);
+}
+
+.filter-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  border: 1px solid rgba(204, 0, 0, 0.1);
+}
+
+.filter-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #c00;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  align-items: end;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+select {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  background: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: 'Prompt', sans-serif;
+}
+
+select:hover {
+  border-color: #c00;
+}
+
+select:focus {
+  outline: none;
+  border-color: #c00;
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.chart-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  border: 1px solid rgba(204, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #c00 0%, #a00 100%);
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 650px;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  border: 1px solid rgba(204, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #c00;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+footer {
+  background: linear-gradient(135deg, #c00 0%, #a00 100%);
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  margin-top: auto;
+  box-shadow: 0 -4px 20px rgba(204, 0, 0, 0.15);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-content p {
+  font-size: 14px;
+  font-weight: 300;
+  opacity: 0.95;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 60px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(204, 0, 0, 0.1);
+  border-top-color: #c00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .header-text h1 {
+    font-size: 20px;
+  }
+  
+  .filter-controls {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-wrapper {
+    height: 500px;
+  }
+  
+  .chart-card {
+    padding: 20px 15px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="header-icon">📊</div>
+    <div class="header-text">
+      <h1>สรุปจำนวนครั้งที่ออกปฏิบัติงานรายเดือน</h1>
+      <p>รายงานสถิติการปฏิบัติงานแยกตามบุคคล</p>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="nav-section fade-in">
+    <a href="manager.html" class="btn btn-secondary">
+      <span>←</span>
+      <span>กลับหน้าหลัก</span>
+    </a>
+    <a href="export-csvM.html" class="btn btn-primary">
+      <span>📥</span>
+      <span>ส่งออกเป็น CSV</span>
+    </a>
+  </div>
+
+  <div id="statsSection" class="stats-grid fade-in" style="display: none;">
+    <div class="stat-card">
+      <div class="stat-label">จำนวนเดือนที่เลือก</div>
+      <div class="stat-value">
+        <span class="stat-icon">📅</span>
+        <span id="monthCount">0</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">จำนวนบุคลากร</div>
+      <div class="stat-value">
+        <span class="stat-icon">👥</span>
+        <span id="workerCount">0</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ครั้งที่ออกงานรวม</div>
+      <div class="stat-value">
+        <span class="stat-icon">🎯</span>
+        <span id="totalWork">0</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ค่าเฉลี่ย/คน</div>
+      <div class="stat-value">
+        <span class="stat-icon">📈</span>
+        <span id="avgWork">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-card fade-in">
+    <div class="filter-title">
+      <span>🔍</span>
+      <span>เลือกช่วงเวลา</span>
+    </div>
+    <div class="filter-controls">
+      <div class="form-group">
+        <label>
+          <span>📅</span>
+          <span>เริ่มต้น</span>
+        </label>
+        <select id="startMonth"></select>
+      </div>
+      <div class="form-group">
+        <label>
+          <span>📅</span>
+          <span>สิ้นสุด</span>
+        </label>
+        <select id="endMonth"></select>
+      </div>
+      <button class="btn btn-primary" id="applyFilter">
+        <span>✨</span>
+        <span>แสดงผลรวม</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="chart-card fade-in">
+    <div id="chartContainer">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>กำลังโหลดข้อมูล...</p>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="display: none;">
+      <canvas id="workChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-content">
+    <p>© 2025 AUTODIDACTIC | ระบบจัดการงานอัจฉริยะ</p>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const monthNames = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+
+function getMonthKey(dateField) {
+  if (typeof dateField === "string") {
+    const date = new Date(dateField);
+    if (!isNaN(date)) {
+      const buddhistYear = date.getFullYear() + 543;
+      return `${monthNames[date.getMonth()]} ${buddhistYear}`;
+    }
+  }
+  return null;
+}
+
+async function loadWorkData() {
+  const eventsRef = ref(db, 'events');
+  const snapshot = await get(eventsRef);
+  
+  const monthlyData = {};
+  const allWorkers = new Set();
+
+  if (snapshot.exists()) {
+    const eventsData = snapshot.val();
+    
+    Object.values(eventsData).forEach(data => {
+      const monthKey = getMonthKey(data.start);
+      if (!monthKey) return;
+
+      if (Array.isArray(data.workers)) {
+        data.workers.forEach(name => {
+          if (!name) return;
+          allWorkers.add(name);
+          if (!monthlyData[monthKey]) monthlyData[monthKey] = {};
+          monthlyData[monthKey][name] = (monthlyData[monthKey][name] || 0) + 1;
+        });
+      } else if (typeof data.workers === "string" && data.workers.trim() !== "") {
+        const name = data.workers.trim();
+        allWorkers.add(name);
+        if (!monthlyData[monthKey]) monthlyData[monthKey] = {};
+        monthlyData[monthKey][name] = (monthlyData[monthKey][name] || 0) + 1;
+      }
+    });
+  }
+
+  return { monthlyData, allWorkers: [...allWorkers] };
+}
+
+let chartInstance = null;
+
+function updateStats(filteredMonths, totalPerPerson, allWorkers) {
+  document.getElementById('statsSection').style.display = 'grid';
+  document.getElementById('monthCount').textContent = filteredMonths.length;
+  document.getElementById('workerCount').textContent = allWorkers.length;
+  
+  const totalWork = Object.values(totalPerPerson).reduce((sum, val) => sum + val, 0);
+  document.getElementById('totalWork').textContent = totalWork;
+  
+  const avgWork = allWorkers.length > 0 ? (totalWork / allWorkers.length).toFixed(1) : 0;
+  document.getElementById('avgWork').textContent = avgWork;
+}
+
+async function renderChart(filteredMonths = null) {
+  const { monthlyData, allWorkers } = await loadWorkData();
+
+  let months = Object.keys(monthlyData).sort((a, b) => {
+    const [ma, ya] = a.split(" ");
+    const [mb, yb] = b.split(" ");
+    return (parseInt(ya) - parseInt(yb)) || (monthNames.indexOf(ma) - monthNames.indexOf(mb));
+  });
+
+  if (filteredMonths) {
+    months = months.filter(m => filteredMonths.includes(m));
+  }
+
+  if (months.length === 0) {
+    document.getElementById("chartContainer").innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>ไม่พบข้อมูล</h3>
+        <p>ไม่มีข้อมูลการปฏิบัติงานในช่วงเวลาที่เลือก</p>
+      </div>
+    `;
+    document.querySelector('.chart-wrapper').style.display = 'none';
+    return;
+  }
+
+  const totalPerPerson = {};
+  allWorkers.forEach(name => totalPerPerson[name] = 0);
+
+  months.forEach(month => {
+    const monthData = monthlyData[month];
+    for (const name in monthData) {
+      totalPerPerson[name] += monthData[name];
+    }
+  });
+
+  updateStats(months, totalPerPerson, allWorkers);
+
+  const sortedEntries = Object.entries(totalPerPerson)
+    .sort((a, b) => b[1] - a[1]);
+
+  const labels = sortedEntries.map(e => e[0]);
+  const values = sortedEntries.map(e => e[1]);
+
+  const ctx = document.getElementById("workChart").getContext("2d");
+  const gradient = ctx.createLinearGradient(0, 0, 400, 0);
+  gradient.addColorStop(0, '#c00');
+  gradient.addColorStop(1, '#ff4444');
+
+  document.getElementById("chartContainer").style.display = 'none';
+  document.querySelector('.chart-wrapper').style.display = 'block';
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: filteredMonths ? `ผลรวมเดือน ${filteredMonths.join(", ")}` : "รวมทุกเดือน",
+        data: values,
+        backgroundColor: gradient,
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: "จำนวนครั้งที่แต่ละคนออกปฏิบัติงาน (รวมเดือนที่เลือก)",
+          color: "#c00",
+          font: { 
+            size: 20,
+            weight: '700',
+            family: "'Prompt', sans-serif"
+          },
+          padding: 20
+        },
+        legend: { 
+          display: true,
+          labels: {
+            font: {
+              size: 14,
+              family: "'Prompt', sans-serif"
+            },
+            padding: 15,
+            usePointStyle: true
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          cornerRadius: 8,
+          titleFont: {
+            size: 15,
+            family: "'Prompt', sans-serif"
+          },
+          bodyFont: {
+            size: 14,
+            family: "'Prompt', sans-serif"
+          }
+        }
+      },
+      scales: {
+        x: { 
+          beginAtZero: true, 
+          ticks: { 
+            stepSize: 1, 
+            color: "#666",
+            font: {
+              size: 13,
+              family: "'Prompt', sans-serif"
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        y: { 
+          ticks: { 
+            color: "#333",
+            font: {
+              size: 13,
+              weight: '500',
+              family: "'Prompt', sans-serif"
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
+
+function setupMonthSelectors(allMonths) {
+  const startSel = document.getElementById("startMonth");
+  const endSel = document.getElementById("endMonth");
+  startSel.innerHTML = "";
+  endSel.innerHTML = "";
+  allMonths.forEach(m => {
+    startSel.innerHTML += `<option value="${m}">${m}</option>`;
+    endSel.innerHTML += `<option value="${m}">${m}</option>`;
+  });
+  endSel.selectedIndex = allMonths.length - 1;
+}
+
+(async function init() {
+  const { monthlyData } = await loadWorkData();
+  const months = Object.keys(monthlyData).sort((a, b) => {
+    const [ma, ya] = a.split(" ");
+    const [mb, yb] = b.split(" ");
+    return (parseInt(ya) - parseInt(yb)) || (monthNames.indexOf(ma) - monthNames.indexOf(mb));
+  });
+  
+  setupMonthSelectors(months);
+  await renderChart();
+
+  document.getElementById("applyFilter").addEventListener("click", () => {
+    const start = document.getElementById("startMonth").value;
+    const end = document.getElementById("endMonth").value;
+    if (!start || !end) return alert("⚠️ กรุณาเลือกช่วงเดือนให้ครบ");
+
+    const sIndex = months.indexOf(start);
+    const eIndex = months.indexOf(end);
+    if (sIndex > eIndex) return alert("⚠️ ลำดับเดือนเริ่มต้นต้องน้อยกว่าหรือเท่ากับเดือนสิ้นสุด");
+
+    const selectedMonths = months.slice(sIndex, eIndex + 1);
+    renderChart(selectedMonths);
+  });
+})();
+</script>
+
+</body>
+</html>

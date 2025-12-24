@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ใบสั่งงาน / รายงานผลการปฏิบัติงาน</title>
+
+<!-- PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Firebase -->
+<script type="module" src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js"></script>
+
+<style>
+body { font-family: "TH Sarabun New", sans-serif; background: #f8fafc; margin:0; font-size:14px; }
+.header-bar { display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg,#c82a11,#ff0101); color:#fff; padding:12px 10px; }
+.header-bar h1 { margin:0; font-size:16px; font-weight:600; }
+.header-bar button { background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; }
+.header-bar button:hover { background:rgba(255,255,255,0.25); }
+
+.btn-group { display:flex; justify-content:center; gap:10px; margin:10px 0; align-items:center; }
+.btn { background:#ff0101; color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; transition:0.2s; }
+.btn:hover { background:#c82a11; }
+.btn:disabled { background:#94a3b8; cursor:not-allowed; }
+.btn.secondary { background:#64748b; }
+.btn.secondary:hover { background:#475569; }
+
+.container { 
+  width:210mm; 
+  background:#fff; 
+  margin:10px auto; 
+  padding:18mm; 
+  box-shadow:0 6px 20px rgba(0,0,0,0.08); 
+  border-radius:12px; 
+  box-sizing:border-box; 
+  transition:opacity 0.3s;
+}
+
+.header-title { text-align:center; margin-bottom:4mm; }
+.header-title h2 { margin:0 0 2mm 0; text-decoration:underline; font-weight:700; font-size:18px; }
+.header-title .jobno { text-align:right; font-size:14px; margin-top:0; }
+
+.line { border-bottom:1px dotted #000; display:inline-block; min-width:35mm; padding:2px 0; text-align:center; line-height:1.8; }
+.lines { border-bottom:1px dotted #000; display:inline-block; min-width:35mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line1 { border-bottom:1px dotted #000; display:inline-block; min-width:36.7mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line2 { border-bottom:1px dotted #000; display:inline-block; min-width:58.4mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line3 { border-bottom:1px dotted #000; display:inline-block; min-width:145mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line4 { border-bottom:1px dotted #000; display:inline-block; min-width:60mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line5 { border-bottom:1px dotted #000; display:inline-block; min-width:127.5mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line7 { border-bottom:1px dotted #000; display:inline-block; min-width:154mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line9 { border-bottom:1px dotted #000; display:inline-block; min-width:156.5mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line8 { border-bottom:1px dotted #000; display:inline-block; min-width:75.5mm; padding:2px 0; text-align:center; line-height:1.8; }
+.line6 { border-bottom:1px dotted #000; display:inline-block; min-width:180mm; padding:2px 0; text-align:center; min-height:10mm; vertical-align:top; line-height:1.8; }
+
+.section { 
+  margin-top:4mm; 
+  line-height:1.5; 
+}
+
+textarea { width:100%; border:none; border-bottom:1px dotted #000; resize:none; font-size:14px; background:transparent; padding:3px 0; }
+input[type="checkbox"] { transform:scale(1.1); margin-right:3px; }
+
+.signature { 
+  margin-top:18mm; 
+  display:flex; 
+  justify-content:space-between;
+  align-items: flex-start;
+}
+.signature div { text-align:center; width:45%; font-size:14px; line-height:1.5; }
+.signature img { max-height:40px; }
+
+input[type="text"] { padding:8px 12px; font-size:14px; border:1px solid #ddd; border-radius:6px; width:200px; }
+.search-box { display:flex; gap:10px; align-items:center; }
+
+.details-box {
+  border-bottom:1px dotted #000; 
+  min-height:8mm; 
+  padding:2px 0; 
+  line-height:1.8;
+}
+
+/* CSS สำหรับการปริ้น */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 210mm !important;
+    padding: 18mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  
+  .line, .lines, .line1, .line2, .line3, .line4, .line5, .line6, .line7, .line8, .line9 {
+    border-bottom: 1px dotted #000 !important;
+    padding: 2px 0 !important;
+    line-height: 1.8 !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+  }
+  
+  .line { min-width: 35mm !important; width: 35mm !important; }
+  .lines { min-width: 35mm !important; width: 35mm !important; }
+  .line1 { min-width: 36.7mm !important; width: 36.7mm !important; }
+  .line2 { min-width: 58.4mm !important; width: 58.4mm !important; }
+  .line3 { min-width: 145mm !important; width: 145mm !important; }
+  .line4 { min-width: 60mm !important; width: 60mm !important; }
+  .line5 { min-width: 127.5mm !important; width: 127.5mm !important; }
+  .line6 { min-width: 180mm !important; width: 180mm !important; min-height: 10mm !important; }
+  .line7 { min-width: 154mm !important; width: 154mm !important; }
+  .line8 { min-width: 75.5mm !important; width: 75.5mm !important; }
+  .line9 { min-width: 156.5mm !important; width: 156.5mm !important; }
+  
+  .section {
+    margin-top: 4mm !important;
+  }
+  
+  .signature {
+    margin-top: 18mm !important;
+  }
+  
+  .details-box {
+    min-height: 8mm !important;
+  }
+  
+  .header-bar, .btn-group {
+    display: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header-bar">
+  <h1>📄 ใบสั่งงาน / รายงานผลการปฏิบัติงาน</h1>
+  <button onclick="window.location.href='adminV2.html'">⬅ กลับหน้าแรก</button>
+</div>
+
+<div class="btn-group">
+  <div class="search-box">
+    <label>Job Number:</label>
+    <input type="text" id="jobNumberInput" placeholder="กรอก Job Number...">
+    <button class="btn secondary" id="searchBtn">🔍 ค้นหา</button>
+  </div>
+  <button class="btn" id="printBtn">🖨️ ปริ้น PDF</button>
+</div>
+
+<div id="report" class="container">
+
+  <!-- 🔹 หัวข้อ + เลขที่สั่งงาน -->
+  <div class="header-title">
+    <h2>ใบสั่งงาน / ใบรายงานผลการปฏิบัติงาน</h2>
+    <div class="jobno">เลขที่: <span id="jobNo" class="line"></span></div>
+  </div>
+
+  <div class="section" style="margin-top:3mm;">
+    ชื่อผู้สั่งงาน: <span id="assignedBy" class="line"></span>
+    วันที่สั่งงาน: <span id="orderDate" class="line"></span>
+    กำหนดเสร็จงาน: <span id="deadlines" class="line1"></span><br>
+  </div>
+
+  <div class="section" style="margin-top:3mm;">
+    ลักษณะงาน:
+    <div style="text-align: right;">เลขที่ JOB: <span id="docNo" class="line"></span></div>
+    <label><input type="checkbox" id="type1"> ส่งมอบ</label>
+    <label><input type="checkbox" id="type2"> ฝึกอบรม</label>
+    <label><input type="checkbox" id="type3"> ตรวจเช็ก/ซ่อม</label>
+    <label><input type="checkbox" id="type4"> Visit</label>
+    <label><input type="checkbox" id="type5"> อื่น ๆ</label>
+  </div>
+
+  <div class="section" style="margin-top:3mm;">
+    รายละเอียดงาน:<br>
+    <div class="details-box">
+      <span id="details"></span>
+    </div>
+    <div class="details-box">
+      <span id="details2"></span>
+    </div>
+  </div>
+
+  <div class="section" style="margin-top:4mm;">
+    ออกเดินทางวันที่: <span id="date" class="line2"></span>
+    เดินทางกลับวันที่: <span id="deadline" class="line2"></span>
+  </div>
+
+  <div class="section">
+    สถานที่ปฏิบัติงาน: <span id="location" class="line3"></span>
+  </div>
+
+  <div class="section">
+    ผู้ติดต่อ: <span id="contactName" class="line4"></span>
+    เบอร์โทรศัพท์: <span id="contactPhone" class="line8"></span>
+  </div>
+
+  <div class="section">
+    ผู้ปฏิบัติงาน: <span id="title" class="line7"></span>
+  </div>
+
+  <div>
+    <br><br>---------------------------------------------------------------------------------------------------------------------------------
+  </div>
+
+  <div class="section">
+    สรุปผลการปฏิบัติงาน:<br><br>
+    <label><input type="checkbox" id="success"> เรียบร้อย</label>
+    <label><input type="checkbox" id="fail"> ไม่เรียบร้อย</label>
+    <span id="incompleteReason" class="line5"></span><br><br>
+    หมายเหตุ: <span id="note" class="line9"></span>
+  </div>
+
+  <div class="signature">
+    <div>
+      <br><br><br>(..........................................)<br><br><br>
+      ลงชื่อผู้รับผิดชอบงาน
+    </div>
+    <div style="position:relative;">
+      <img id="signatureImg" 
+           src="https://i.postimg.cc/Ny0GLn2m/signature.png" 
+           style="display:none; max-height:60px; position:absolute; bottom: 70px; left:52%; transform:translateX(-50%);"
+           crossorigin="anonymous">
+      <br><br><br>(..........................................)<br><br><br>
+      ผู้อนุมัติ / ผู้จัดการ
+    </div>
+  </div>
+  
+  <div class="signature" style="margin-top:8mm; font-size:12px;">
+    <div style="text-align:left;">
+      <u>สำคัญ!</u> การเตรียมเอกสาร<br>
+      1. ส่งมอบงาน และติดตั้ง อย่างน้อย 7 วันทำการ<br>
+      2. ฝึกอบรม อย่างน้อย 5 วันทำการ<br>
+      3. ออกแสดงสินค้า อย่างน้อย 10 วันทำการ<br>
+      4. ตรวจเช็ค/ซ่อม อย่างน้อย 3 วันทำการ<br>
+      5. Visit งาน อย่างน้อย 5 วันทำการ
+    </div>
+    <div>
+      กรณีด่วน!<br><br><br>
+      (..........................................)<br>
+      ผู้อนุมัติ/คุณฉัตรชัย
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const jobNumberInput = document.getElementById("jobNumberInput");
+const searchBtn = document.getElementById("searchBtn");
+const signatureImg = document.getElementById("signatureImg");
+
+let isDataLoaded = false;
+
+function getParamsFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return {
+    jobNumber: urlParams.get('job'),
+    start: urlParams.get('start'),
+    end: urlParams.get('end')
+  };
+}
+
+async function searchAndDisplay(jobNum = null) {
+  const jobNumber = jobNum || jobNumberInput.value.trim();
+  
+  if (!jobNumber) {
+    alert("⚠️ กรุณากรอก Job Number");
+    return;
+  }
+
+  document.getElementById("report").style.opacity = "0.5";
+  isDataLoaded = false;
+
+  try {
+    // Query Realtime Database
+    const eventsRef = ref(db, 'events');
+    const q = query(eventsRef, orderByChild('jobNumber'), equalTo(jobNumber));
+    const snapshot = await get(q);
+
+    if (!snapshot.exists()) {
+      alert("❌ ไม่พบข้อมูล Job Number: " + jobNumber);
+      document.getElementById("report").style.opacity = "1";
+      return;
+    }
+
+    // Get first matching record
+    let data = null;
+    snapshot.forEach((childSnapshot) => {
+      if (!data) {
+        data = childSnapshot.val();
+      }
+    });
+
+    if (!data) {
+      alert("❌ ไม่พบข้อมูล Job Number: " + jobNumber);
+      document.getElementById("report").style.opacity = "1";
+      return;
+    }
+    
+    if (data.signType === "เซ็นเอง") {
+      const currentParams = new URLSearchParams(window.location.search);
+      window.location.href = `reportAp.html?${currentParams.toString()}`;
+      return;
+    }
+
+    signatureImg.style.display = (data.status === "อนุมัติ" || data.status === "เรียบร้อย" || data.status === "ไม่เรียบร้อย") ? "block" : "none";
+    
+    function formatDateThai(dateStr) {
+      if (!dateStr) return "";
+      const date = new Date(dateStr);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear() + 543;
+      return `${day}/${month}/${year}`;
+    }
+
+    const formattedStart = formatDateThai(data.start);
+    const formattedOrderDate = formatDateThai(data.orderDate);
+    const formattedEnd = formatDateThai(data.end);
+
+    document.getElementById("docNo").textContent = data.jobNumber || "";
+    document.getElementById("jobNo").textContent = data.job || "";
+    document.getElementById("assignedBy").textContent = (data.assigners || []).join(", ");
+    document.getElementById("date").textContent = formattedStart;
+    document.getElementById("orderDate").textContent = formattedOrderDate;
+    document.getElementById("deadline").textContent = formattedEnd;
+    document.getElementById("deadlines").textContent = formattedEnd;
+
+    const detailsText = data.details || "";
+    const maxLength = 100;
+    if (detailsText.length > maxLength) {
+      document.getElementById("details").textContent = detailsText.substring(0, maxLength);
+      document.getElementById("details2").textContent = detailsText.substring(maxLength);
+    } else {
+      document.getElementById("details").textContent = detailsText;
+      document.getElementById("details2").textContent = "";
+    }
+    
+    document.getElementById("location").textContent = data.location || "";
+    document.getElementById("title").textContent = (data.workers || []).join(", ");
+    document.getElementById("contactName").textContent = data.contactPerson || "-";
+    document.getElementById("contactPhone").textContent = data.phoneNumber || "-";
+
+    ["type1","type2","type3","type4","type5"].forEach(id => document.getElementById(id).checked=false);
+
+    if (data.jobTypes) {
+      if (data.jobTypes.includes("ส่งมอบ")) document.getElementById("type1").checked = true;
+      if (data.jobTypes.includes("ฝึกอบรม")) document.getElementById("type2").checked = true;
+      if (data.jobTypes.includes("ตรวจเช็ค/ซ่อม")) document.getElementById("type3").checked = true;
+      if (data.jobTypes.includes("Visit")) document.getElementById("type4").checked = true;
+
+      const other = data.jobTypes.find(t =>
+        !["ส่งมอบ","ฝึกอบรม","ตรวจเช็ค/ซ่อม","Visit"].includes(t)
+      );
+      if (other) document.getElementById("type5").checked = true;
+    }
+
+    document.getElementById("success").checked = data.status === "เรียบร้อย";
+    document.getElementById("fail").checked = data.status === "ไม่เรียบร้อย";
+    document.getElementById("note").textContent = data.remark || "";
+    document.getElementById("incompleteReason").textContent = data.incompleteReason || "";
+
+    isDataLoaded = true;
+    document.getElementById("report").style.opacity = "1";
+    alert("✅ พบข้อมูล Job Number: " + jobNumber);
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("❌ เกิดข้อผิดพลาด: " + error.message);
+    document.getElementById("report").style.opacity = "1";
+    isDataLoaded = false;
+  }
+}
+
+searchBtn.addEventListener("click", () => searchAndDisplay());
+jobNumberInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") searchAndDisplay();
+});
+
+window.addEventListener('DOMContentLoaded', async () => {
+  console.log("🌐 เริ่มโหลดหน้าเว็บ...");
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  console.log("✅ Firebase พร้อมใช้งาน");
+  
+  const params = getParamsFromURL();
+  
+  if (params.jobNumber) {
+    jobNumberInput.value = params.jobNumber;
+    if (params.start) console.log("วันเริ่ม:", params.start);
+    if (params.end) console.log("วันสิ้นสุด:", params.end);
+    searchAndDisplay(params.jobNumber);
+  }
+});
+
+document.getElementById("printBtn").addEventListener("click", async () => {
+  console.log("🔍 เริ่มตรวจสอบข้อมูลก่อนปริ้น...");
+  
+  if (!isDataLoaded) {
+    alert("⚠️ กรุณาค้นหาข้อมูลก่อนปริ้น!");
+    return;
+  }
+
+  const jobNumber = document.getElementById("docNo").textContent.trim();
+  if (!jobNumber) {
+    alert("⚠️ ไม่พบข้อมูลในฟอร์ม กรุณาค้นหาใหม่!");
+    isDataLoaded = false;
+    return;
+  }
+
+  const printBtn = document.getElementById("printBtn");
+  const originalText = printBtn.textContent;
+  printBtn.textContent = "⏳ กำลังสร้าง PDF...";
+  printBtn.disabled = true;
+
+  try {
+    console.log("📄 เริ่มสร้าง PDF...");
+    const element = document.getElementById("report");
+    const filename = `${jobNumber}.pdf`;
+
+    const signatureImg = document.getElementById("signatureImg");
+    if (signatureImg && signatureImg.style.display !== "none") {
+      console.log("⏳ รอโหลดรูปลายเซ็น...");
+      
+      const preloadImg = new Image();
+      preloadImg.crossOrigin = "anonymous";
+      preloadImg.src = signatureImg.src;
+      
+      await new Promise((resolve) => {
+        if (signatureImg.complete && signatureImg.naturalWidth > 0) {
+          console.log("✅ รูปลายเซ็นโหลดเสร็จแล้ว");
+          resolve();
+          return;
+        }
+        
+        preloadImg.onload = () => {
+          console.log("✅ Preload รูปลายเซ็นสำเร็จ");
+          signatureImg.src = preloadImg.src;
+          setTimeout(resolve, 500);
+        };
+        
+        preloadImg.onerror = () => {
+          console.log("⚠️ Preload รูปลายเซ็นล้มเหลว - ข้าม");
+          resolve();
+        };
+        
+        setTimeout(() => {
+          console.log("⏱️ Timeout รูปลายเซ็น (8s)");
+          resolve();
+        }, 8000);
+      });
+    }
+
+    console.log("⏳ รอ DOM เรนเดอร์...");
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    console.log("🎨 กำลัง render HTML to Canvas...");
+
+    await html2pdf().set({
+      margin: 0,
+      filename: filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { 
+        scale: 2.5,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        letterRendering: true,
+        windowHeight: 297 * 3.7795275591,
+        height: 297 * 3.7795275591,
+        backgroundColor: '#ffffff',
+        removeContainer: true,
+        imageTimeout: 15000
+      },
+      jsPDF: { 
+        unit: "mm", 
+        format: "a4", 
+        orientation: "portrait",
+        compress: true
+      },
+      pagebreak: { mode: 'avoid-all' }
+    }).from(element).save();
+
+    console.log("✅ PDF สร้างสำเร็จ!");
+    alert("✅ สร้าง PDF สำเร็จ: " + filename);
+
+  } catch (error) {
+    console.error("❌ PDF Error:", error);
+    alert("❌ เกิดข้อผิดพลาด: " + error.message);
+  } finally {
+    printBtn.textContent = originalText;
+    printBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

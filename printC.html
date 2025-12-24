@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>📅 ปฏิทินสัปดาห์</title>
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  color: #1a202c;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.title-section {
+  flex: 1;
+  min-width: 250px;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #718096;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Sarabun', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(192, 0, 0, 0.4);
+}
+
+.btn-secondary {
+  background: white;
+  color: #c00;
+  border: 2px solid #c00;
+}
+
+.btn-secondary:hover {
+  background: #c00;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.legend-container {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e2e8f0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f7fafc;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.legend-item.hidden {
+  display: none;
+}
+
+.legend-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-wrapper {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  height: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+#calendar {
+  flex: 1;
+  min-height: 0;
+}
+
+.fc {
+  height: 100% !important;
+}
+
+.fc .fc-view-harness {
+  height: 100% !important;
+}
+
+.fc .fc-view-harness-active {
+  height: 100% !important;
+}
+
+.fc-scroller {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* FullCalendar Customization */
+.fc {
+  font-family: 'Sarabun', sans-serif !important;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  color: #c00 !important;
+}
+
+.fc .fc-button-primary {
+  background: linear-gradient(135deg, #c00 0%, #f44336 100%) !important;
+  border: none !important;
+  padding: 0.6rem 1.2rem !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(192, 0, 0, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.fc .fc-button-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(192, 0, 0, 0.4) !important;
+}
+
+.fc .fc-button-primary:disabled {
+  opacity: 0.5 !important;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: #e2e8f0 !important;
+}
+
+.fc .fc-col-header-cell {
+  background: #f7fafc !important;
+  padding: 1rem 0.5rem !important;
+  font-weight: 700 !important;
+  color: #2d3748 !important;
+  font-size: 0.95rem !important;
+}
+
+.fc .fc-timegrid-slot {
+  height: 35px !important;
+  font-size: 0.85rem !important;
+}
+
+.fc .fc-timegrid-slot-label {
+  color: #718096 !important;
+  font-weight: 500 !important;
+}
+
+.fc-timegrid-event {
+  border-radius: 8px !important;
+  border: none !important;
+  padding: 4px 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.fc-event {
+  cursor: pointer !important;
+}
+
+.event-card {
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.event-card.event-type::before {
+  background: currentColor;
+}
+
+.event-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.event-detail {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.event-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  margin-top: 4px;
+}
+
+.status-circles {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.status-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+}
+
+.status-circle.checked {
+  background: #48bb78;
+  color: white;
+}
+
+.status-circle.unchecked {
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(102, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1.25rem;
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+  
+  @page :first {
+    margin: 8mm;
+  }
+  
+  @page :blank {
+    display: none;
+  }
+  
+  * {
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-inside: avoid !important;
+    break-after: avoid !important;
+    break-before: avoid !important;
+  }
+  
+  html {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    position: relative !important;
+    color: black !important;
+  }
+  
+  * {
+    color: black !important;
+  }
+  
+  body::after {
+    content: none !important;
+    display: none !important;
+  }
+  
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 194mm !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+  
+  .header-top {
+    margin-bottom: 0.3rem !important;
+  }
+  
+  .actions, .legend-container {
+    display: none !important;
+  }
+  
+  .page-title {
+    font-size: 1rem !important;
+    color: #667eea !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    margin-bottom: 0.2rem !important;
+  }
+  
+  .subtitle {
+    font-size: 0.7rem !important;
+  }
+  
+  .header, .calendar-wrapper {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  
+  .header {
+    padding: 0.3rem 0.5rem !important;
+    margin-bottom: 0.3rem !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .calendar-wrapper {
+    padding: 0.3rem !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+  }
+  
+  #calendar {
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+  
+  .fc {
+    height: 100% !important;
+    max-height: 100% !important;
+    font-size: 8px !important;
+  }
+  
+  .fc .fc-view-harness {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  .fc .fc-view {
+    height: 100% !important;
+  }
+  
+  .fc-scroller,
+  .fc-scroller-liquid-absolute {
+    overflow: hidden !important;
+    height: auto !important;
+  }
+  
+  .fc .fc-toolbar {
+    margin-bottom: 0.3rem !important;
+    padding: 0 !important;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem !important;
+  }
+  
+  .fc .fc-button-primary {
+    display: none !important;
+  }
+  
+  .fc .fc-col-header-cell {
+    padding: 0.2rem 0.1rem !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .fc .fc-timegrid-slot {
+    height: 20px !important;
+    font-size: 0.6rem !important;
+    display: none !important;
+  }
+  
+  .fc .fc-timegrid-slot-label {
+    font-size: 0.6rem !important;
+    padding: 0 2px !important;
+    display: none !important;
+  }
+  
+  .fc .fc-timegrid-axis {
+    display: none !important;
+  }
+  
+  .fc-timegrid-slot-lane {
+    display: none !important;
+  }
+  
+  .fc-timegrid-divider {
+    padding: 0 !important;
+    height: 1px !important;
+  }
+  
+  .fc .fc-scrollgrid {
+    border-collapse: collapse !important;
+  }
+  
+  .event-card {
+    font-size: 0.55rem !important;
+    padding: 1px !important;
+    line-height: 1 !important;
+    color: black !important;
+  }
+  
+  .event-title {
+    font-size: 0.55rem !important;
+    margin-bottom: 0 !important;
+    color: black !important;
+  }
+  
+  .event-detail {
+    font-size: 0.5rem !important;
+    margin: 0 !important;
+    color: black !important;
+  }
+  
+  .event-status {
+    font-size: 0.45rem !important;
+    margin-top: 0 !important;
+    color: black !important;
+  }
+  
+  .status-circle {
+    width: 6px !important;
+    height: 6px !important;
+    font-size: 4px !important;
+  }
+  
+  .fc-timegrid-event {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+  }
+  
+  .fc-timegrid-event-harness {
+    margin: 0 !important;
+  }
+  
+  .fc-timegrid-col-events {
+    margin: 0 !important;
+  }
+  
+  .fc-timegrid-more-link,
+  .fc-more-popover {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .actions {
+    width: 100%;
+  }
+  
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .legend-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-top">
+      <div class="title-section">
+        <h1 class="page-title">📅 ปฏิทินสัปดาห์</h1>
+        <div class="subtitle">
+          <span>🕒</span>
+          <span id="printDate">กำลังโหลด...</span>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn btn-primary" onclick="window.print()">
+          <span>🖨️</span>
+          <span>พิมพ์</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.history.back()">
+          <span>←</span>
+          <span>กลับ</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="legend-container">
+      <div class="legend-item" data-status="รออนุมัติ">
+        <div class="legend-badge" style="background: #a0aec0; color: white;">⏳</div>
+        <span>รออนุมัติ</span>
+      </div>
+      <div class="legend-item" data-status="อนุมัติ">
+        <div class="legend-badge" style="background: #E3C565; color: white;">✓</div>
+        <span>อนุมัติ</span>
+      </div>
+      <div class="legend-item" data-status="เรียบร้อย">
+        <div class="legend-badge" style="background: #48bb78; color: white;">✓✓</div>
+        <span>เรียบร้อย</span>
+      </div>
+      <div class="legend-item" data-status="ไม่เรียบร้อย">
+        <div class="legend-badge" style="background: #c00; color: white;">✗</div>
+        <span>ไม่เรียบร้อย</span>
+      </div>
+      <div class="legend-item" data-type="leave">
+        <div class="legend-badge" style="background: #4299e1; color: white;">🏖</div>
+        <span>วันลา</span>
+      </div>
+      <div class="legend-item" data-type="holiday">
+        <div class="legend-badge" style="background: #ed8936; color: white;">🎉</div>
+        <span>วันหยุด</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-wrapper">
+    <div id="calendar" class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">กำลังโหลดข้อมูล...</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase, ref, get
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+function addOneDayForCalendar(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  d.setDate(d.getDate() + 2);
+  return d.toISOString().split("T")[0];
+}
+
+function formatDateTimeThai() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear() + 543;
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `พิมพ์เมื่อ: ${day}/${month}/${year} เวลา ${hours}:${minutes} น.`;
+}
+
+function updateLegendVisibility(events) {
+  // เก็บสถานะและประเภทที่มีในข้อมูล
+  const statuses = new Set();
+  const types = new Set();
+  
+  events.forEach(event => {
+    if (event.type === "leave") {
+      types.add("leave");
+    } else if (event.type === "holiday") {
+      types.add("holiday");
+    } else if (event.status) {
+      statuses.add(event.status);
+    }
+  });
+  
+  // ซ่อน/แสดง legend items
+  document.querySelectorAll('.legend-item').forEach(item => {
+    const status = item.getAttribute('data-status');
+    const type = item.getAttribute('data-type');
+    
+    if (status && !statuses.has(status)) {
+      item.classList.add('hidden');
+    } else if (type && !types.has(type)) {
+      item.classList.add('hidden');
+    } else {
+      item.classList.remove('hidden');
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("printDate").textContent = formatDateTimeThai();
+
+  const calendarEl = document.getElementById("calendar");
+  
+  calendarEl.innerHTML = '';
+  calendarEl.className = '';
+  
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: "th",
+    timeZone: "Asia/Bangkok",
+    initialView: "dayGridWeek",
+    firstDay: 1,
+    weekends: true,
+    headerToolbar: { 
+      left: "prev,next today", 
+      center: "title", 
+      right: "" 
+    },
+    nowIndicator: true,
+    height: 'parent',
+    expandRows: true,
+    eventContent: function(arg) {
+      const data = arg.event.extendedProps;
+      const el = document.createElement("div");
+      el.className = "event-card event-type";
+
+      if (data.type === "leave") {
+        el.style.background = "#E3F2FD";
+        el.style.color = "#1565C0";
+        el.innerHTML = `
+          <span class="event-title">🏖 ${arg.event.title}</span>
+          <div class="event-detail">${data.reason || '-'}</div>
+        `;
+      } else if (data.type === "holiday") {
+        el.style.background = "#FFF3E0";
+        el.style.color = "#E65100";
+        el.innerHTML = `
+          <span class="event-title">🎉 ${arg.event.title}</span>
+        `;
+      } else {
+        let acknowledgeLabel = "";
+        if (data.status !== "เรียบร้อย" && data.status !== "ไม่เรียบร้อย") {
+          let workersList = [];
+          if (arg.event.title && typeof arg.event.title === 'string') {
+            workersList = arg.event.title.split(",").map(name => name.trim()).filter(name => name.length > 0);
+          }
+          const totalWorkers = workersList.length;
+          
+          let acknowledgedList = [];
+          if (data.acknowledgedBy) {
+            if (Array.isArray(data.acknowledgedBy)) {
+              acknowledgedList = data.acknowledgedBy.map(name => name.trim().normalize('NFC'));
+            } else if (typeof data.acknowledgedBy === 'string' && data.acknowledgedBy.trim() !== '') {
+              acknowledgedList = data.acknowledgedBy.split(",").map(name => name.trim().normalize('NFC'));
+            }
+          }
+          
+          let circles = '<span class="status-circles">';
+          for (let i = 0; i < totalWorkers; i++) {
+            if (i < acknowledgedList.length) {
+              circles += '<span class="status-circle checked">✓</span>';
+            } else {
+              circles += '<span class="status-circle unchecked"></span>';
+            }
+          }
+          circles += '</span>';
+          
+          acknowledgeLabel = circles;
+        }
+        
+        const locationDisplay = data.location || "-";
+        const howtoDisplay = data.howto ? ` (${data.howto})` : "";
+        
+        el.innerHTML = `
+          <span class="event-title">${arg.event.title}</span>
+          <div class="event-detail">📍 ${locationDisplay}${howtoDisplay}</div>
+          <div class="event-detail">🧰 ${data.jobTypes || "-"}</div>
+          <div class="event-status">📌 ${data.status || "-"} ${acknowledgeLabel}</div>
+        `;
+      }
+
+      return { domNodes: [el] };
+    }
+  });
+
+  calendar.render();
+  
+  console.log('Calendar rendered');
+
+  try {
+    const allEvents = [];
+
+    const eventsRef = ref(db, "events");
+    const eventsSnapshot = await get(eventsRef);
+    if (eventsSnapshot.exists()) {
+      const eventsData = eventsSnapshot.val();
+      Object.entries(eventsData).forEach(([key, data]) => {
+        let color = "#a0aec0";
+        if (data.status === "รออนุมัติ") color = "gray";
+        else if (data.status === "อนุมัติ") color = "#E3C565";
+        else if (data.status === "เรียบร้อย") color = "green";
+        else if (data.status === "ไม่เรียบร้อย") color = "#c00";
+
+        allEvents.push({
+          id: key,
+          title: Array.isArray(data.workers) ? data.workers.join(", ") : (data.workers || "-"),
+          start: data.start || "",
+          end: data.end ? addOneDayForCalendar(data.end) : undefined,
+          location: data.location || "",
+          howto: data.howto || "",
+          jobNumber: data.jobNumber || "-",
+          jobTypes: Array.isArray(data.jobTypes) ? data.jobTypes.join(", ") : (data.jobTypes || "-"),
+          status: data.status || "รออนุมัติ",
+          acknowledged: data.acknowledged || false,
+          acknowledgedBy: data.acknowledgedBy || "",
+          backgroundColor: color,
+          borderColor: color,
+          textColor: "#ffffff",
+          type: "event",
+          allDay: true
+        });
+      });
+    }
+
+    const leavesRef = ref(db, "Days/leaves");
+    const leavesSnapshot = await get(leavesRef);
+    if (leavesSnapshot.exists()) {
+      const leavesData = leavesSnapshot.val();
+      Object.entries(leavesData).forEach(([key, data]) => {
+        allEvents.push({
+          id: "leave-" + key,
+          title: data.name || "ไม่ระบุชื่อ",
+          start: data.start || "",
+          end: data.end ? addOneDayForCalendar(data.end) : undefined,
+          backgroundColor: "#4299e1",
+          borderColor: "#4299e1",
+          textColor: "#ffffff",
+          type: "leave",
+          reason: data.reason || "",
+          allDay: true
+        });
+      });
+    }
+
+    const holidaysRef = ref(db, "Days/holidays");
+    const holidaysSnapshot = await get(holidaysRef);
+    if (holidaysSnapshot.exists()) {
+      const holidaysData = holidaysSnapshot.val();
+      Object.entries(holidaysData).forEach(([key, data]) => {
+        allEvents.push({
+          id: "holiday-" + key,
+          title: data.name || "วันหยุด",
+          start: data.date || "",
+          end: data.date ? addOneDayForCalendar(data.date) : undefined,
+          backgroundColor: "#ed8936",
+          borderColor: "#ed8936",
+          textColor: "#ffffff",
+          type: "holiday",
+          allDay: true
+        });
+      });
+    }
+
+    calendar.addEventSource(allEvents);
+    calendar.refetchEvents();
+    
+    // อัปเดตการแสดง legend
+    updateLegendVisibility(allEvents);
+    
+    console.log('Events loaded:', allEvents.length);
+  } catch (err) {
+    console.error("Error loading calendar:", err);
+    document.getElementById("calendar").innerHTML = `
+      <div style="color: #c53030; text-align: center; padding: 3rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+        <strong style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;">เกิดข้อผิดพลาด</strong>
+        <small style="color: #718096;">${err.message}</small>
+      </div>`;
+  }
+});
+</script>
+
+</body>
+</html>

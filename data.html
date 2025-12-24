@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตัวอย่างการดึงข้อมูล | AUTODIDACTIC</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.section {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+
+.section h2 {
+  color: #667eea;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.data-item {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.data-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.data-value {
+  background: #667eea;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.code-block {
+  background: #2d3748;
+  color: #68d391;
+  padding: 20px;
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  margin-top: 15px;
+  line-height: 1.6;
+}
+
+.code-comment {
+  color: #a0aec0;
+}
+
+.code-keyword {
+  color: #fc8181;
+}
+
+.code-string {
+  color: #f6e05e;
+}
+
+.code-function {
+  color: #68d391;
+}
+
+.btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 10px;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: #f56565;
+}
+
+.btn-danger:hover {
+  background: #e53e3e;
+}
+
+.alert {
+  background: #fef5e7;
+  border-left: 4px solid #f39c12;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: #7d6608;
+}
+
+.firebase-data {
+  background: #fff5f5;
+  border-left: 4px solid #f56565;
+}
+
+.firebase-data h2 {
+  color: #f56565;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔍 วิธีการดึงข้อมูลผู้ใช้</h1>
+  <p class="subtitle">ตัวอย่างการดึงข้อมูลจาก sessionStorage และ Firebase Database</p>
+
+  <div class="alert">
+    ⚠️ <strong>หมายเหตุ:</strong> ข้อมูลด้านล่างจะแสดงหลังจากล็อกอินเท่านั้น หากยังไม่มีข้อมูล กรุณาล็อกอินก่อน
+  </div>
+
+  <!-- ส่วนที่ 1: ข้อมูลจาก sessionStorage -->
+  <div class="section">
+    <h2>📦 1. ข้อมูลจาก sessionStorage (หลังล็อกอิน)</h2>
+    
+    <div class="data-item">
+      <span class="data-label">🆔 รหัสผู้ใช้ (user_id):</span>
+      <span class="data-value" id="displayUserId">-</span>
+    </div>
+    
+    <div class="data-item">
+      <span class="data-label">👤 ชื่อผู้ใช้ (userName):</span>
+      <span class="data-value" id="displayUserName">-</span>
+    </div>
+    
+    <div class="data-item">
+      <span class="data-label">💼 ตำแหน่ง (userPosition):</span>
+      <span class="data-value" id="displayUserPosition">-</span>
+    </div>
+    
+    <div class="data-item">
+      <span class="data-label">✅ สถานะ (userStatus):</span>
+      <span class="data-value" id="displayUserStatus">-</span>
+    </div>
+
+    <div class="code-block">
+<span class="code-comment">// วิธีดึงข้อมูลจาก sessionStorage</span>
+<span class="code-keyword">const</span> user_id = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"user_id"</span>);
+<span class="code-keyword">const</span> userName = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"userName"</span>);
+<span class="code-keyword">const</span> userPosition = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"userPosition"</span>);
+<span class="code-keyword">const</span> userStatus = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"userStatus"</span>);
+
+<span class="code-comment">// ตรวจสอบว่าผู้ใช้ล็อกอินหรือยัง</span>
+<span class="code-keyword">if</span> (!user_id) {
+  <span class="code-function">window</span>.location.href = <span class="code-string">"login.html"</span>;
+}
+
+<span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"User ID:"</span>, user_id);
+<span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"User Name:"</span>, userName);
+    </div>
+  </div>
+
+  <!-- ส่วนที่ 2: ข้อมูลจาก Firebase -->
+  <div class="section firebase-data">
+    <h2>🔥 2. ดึงข้อมูลเพิ่มเติมจาก Firebase Database</h2>
+    
+    <div class="data-item">
+      <span class="data-label">📧 อีเมล:</span>
+      <span class="data-value" id="displayEmail">-</span>
+    </div>
+    
+    <div class="data-item">
+      <span class="data-label">📱 เบอร์โทร:</span>
+      <span class="data-value" id="displayPhone">-</span>
+    </div>
+    
+    <div class="data-item">
+      <span class="data-label">🏢 แผนก:</span>
+      <span class="data-value" id="displayDepartment">-</span>
+    </div>
+
+    <div class="code-block">
+<span class="code-comment">// นำเข้า Firebase modules</span>
+<span class="code-keyword">import</span> { initializeApp } <span class="code-keyword">from</span> <span class="code-string">"firebase/app"</span>;
+<span class="code-keyword">import</span> { getDatabase, ref, get } <span class="code-keyword">from</span> <span class="code-string">"firebase/database"</span>;
+
+<span class="code-comment">// ดึงข้อมูลผู้ใช้จาก Firebase</span>
+<span class="code-keyword">async function</span> <span class="code-function">getUserData</span>() {
+  <span class="code-keyword">const</span> user_id = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"user_id"</span>);
+  
+  <span class="code-keyword">if</span> (!user_id) {
+    <span class="code-function">console</span>.<span class="code-function">error</span>(<span class="code-string">"No user_id found"</span>);
+    <span class="code-keyword">return</span>;
+  }
+  
+  <span class="code-keyword">const</span> db = <span class="code-function">getDatabase</span>();
+  <span class="code-keyword">const</span> userRef = <span class="code-function">ref</span>(db, <span class="code-string">`users/${user_id}`</span>);
+  
+  <span class="code-keyword">try</span> {
+    <span class="code-keyword">const</span> snapshot = <span class="code-keyword">await</span> <span class="code-function">get</span>(userRef);
+    
+    <span class="code-keyword">if</span> (snapshot.<span class="code-function">exists</span>()) {
+      <span class="code-keyword">const</span> userData = snapshot.<span class="code-function">val</span>();
+      <span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"User Data:"</span>, userData);
+      
+      <span class="code-comment">// ใช้ข้อมูลที่ดึงมา</span>
+      <span class="code-keyword">return</span> userData;
+    } <span class="code-keyword">else</span> {
+      <span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"No data found"</span>);
+    }
+  } <span class="code-keyword">catch</span> (error) {
+    <span class="code-function">console</span>.<span class="code-function">error</span>(<span class="code-string">"Error fetching data:"</span>, error);
+  }
+}
+    </div>
+  </div>
+
+  <!-- ส่วนที่ 3: ตัวอย่างการใช้งาน -->
+  <div class="section">
+    <h2>💡 3. ตัวอย่างการใช้งานจริง</h2>
+    
+    <div class="code-block">
+<span class="code-comment">// ตัวอย่าง: ตรวจสอบสิทธิ์การเข้าถึง</span>
+<span class="code-keyword">function</span> <span class="code-function">checkPermission</span>() {
+  <span class="code-keyword">const</span> position = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"userPosition"</span>);
+  
+  <span class="code-keyword">if</span> (position === <span class="code-string">"admin"</span> || position === <span class="code-string">"manager"</span>) {
+    <span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"✅ มีสิทธิ์เข้าถึงหน้านี้"</span>);
+    <span class="code-keyword">return</span> <span class="code-keyword">true</span>;
+  } <span class="code-keyword">else</span> {
+    <span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"❌ ไม่มีสิทธิ์เข้าถึง"</span>);
+    <span class="code-keyword">return</span> <span class="code-keyword">false</span>;
+  }
+}
+
+<span class="code-comment">// ตัวอย่าง: แสดงชื่อผู้ใช้บนหน้าเว็บ</span>
+<span class="code-keyword">function</span> <span class="code-function">displayWelcomeMessage</span>() {
+  <span class="code-keyword">const</span> userName = <span class="code-function">sessionStorage</span>.<span class="code-function">getItem</span>(<span class="code-string">"userName"</span>);
+  <span class="code-keyword">const</span> welcomeElement = <span class="code-function">document</span>.<span class="code-function">getElementById</span>(<span class="code-string">"welcome"</span>);
+  welcomeElement.textContent = <span class="code-string">`สวัสดี, ${userName}`</span>;
+}
+
+<span class="code-comment">// ตัวอย่าง: ดึงข้อมูล originalEventId จาก URL</span>
+<span class="code-keyword">function</span> <span class="code-function">getOriginalEventId</span>() {
+  <span class="code-keyword">const</span> urlParams = <span class="code-keyword">new</span> <span class="code-function">URLSearchParams</span>(<span class="code-function">window</span>.location.search);
+  <span class="code-keyword">const</span> eventId = urlParams.<span class="code-function">get</span>(<span class="code-string">"originalEventId"</span>);
+  <span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">"Original Event ID:"</span>, eventId);
+  <span class="code-keyword">return</span> eventId;
+}
+    </div>
+  </div>
+
+  <!-- ปุ่มควบคุม -->
+  <div style="margin-top: 30px; text-align: center;">
+    <button class="btn" onclick="refreshData()">🔄 รีเฟรชข้อมูล</button>
+    <button class="btn" onclick="showAllSessionData()">📋 แสดงข้อมูลทั้งหมด</button>
+    <button class="btn btn-danger" onclick="logout()">🚪 ออกจากระบบ</button>
+  </div>
+
+  <div id="allData" style="margin-top: 20px;"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAXayBBLVSohNCIsnlWRq6rD0BUbW70MGk",
+  authDomain: "events-666d6.firebaseapp.com",
+  databaseURL: "https://events-666d6-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-666d6",
+  storageBucket: "events-666d6.firebasestorage.app",
+  messagingSenderId: "589078390914",
+  appId: "1:589078390914:web:480ce96137ffac835aac9b",
+  measurementId: "G-97GD75S814"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ฟังก์ชันดึงและแสดงข้อมูลจาก sessionStorage
+function displaySessionData() {
+  console.log("=== Displaying Session Data ===");
+  
+  const user_id = sessionStorage.getItem("user_id");
+  const userName = sessionStorage.getItem("userName");
+  const userPosition = sessionStorage.getItem("userPosition");
+  const userStatus = sessionStorage.getItem("userStatus");
+  
+  console.log("user_id:", user_id);
+  console.log("userName:", userName);
+  console.log("userPosition:", userPosition);
+  console.log("userStatus:", userStatus);
+  
+  document.getElementById("displayUserId").textContent = user_id || "ไม่พบข้อมูล";
+  document.getElementById("displayUserName").textContent = userName || "ไม่พบข้อมูล";
+  document.getElementById("displayUserPosition").textContent = userPosition || "ไม่พบข้อมูล";
+  document.getElementById("displayUserStatus").textContent = userStatus || "ไม่พบข้อมูล";
+}
+
+// ฟังก์ชันดึงข้อมูลเพิ่มเติมจาก Firebase
+async function fetchFirebaseData() {
+  console.log("=== Fetching Firebase Data ===");
+  
+  const user_id = sessionStorage.getItem("user_id");
+  
+  if (!user_id) {
+    console.log("No user_id found in session");
+    return;
+  }
+  
+  try {
+    const userRef = ref(db, `users/${user_id}`);
+    const snapshot = await get(userRef);
+    
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+      console.log("Firebase User Data:", userData);
+      
+      // แสดงข้อมูลเพิ่มเติม (ถ้ามี)
+      document.getElementById("displayEmail").textContent = userData.email || "ไม่มีข้อมูล";
+      document.getElementById("displayPhone").textContent = userData.phone || "ไม่มีข้อมูล";
+      document.getElementById("displayDepartment").textContent = userData.department || "ไม่มีข้อมูล";
+      
+      return userData;
+    } else {
+      console.log("No user data found in Firebase");
+    }
+  } catch (error) {
+    console.error("Error fetching Firebase data:", error);
+  }
+}
+
+// ฟังก์ชันรีเฟรชข้อมูล
+window.refreshData = function() {
+  console.log("Refreshing data...");
+  displaySessionData();
+  fetchFirebaseData();
+}
+
+// ฟังก์ชันแสดงข้อมูลทั้งหมดจาก sessionStorage
+window.showAllSessionData = function() {
+  const allDataDiv = document.getElementById("allData");
+  let html = '<div class="section"><h2>📊 ข้อมูลทั้งหมดใน sessionStorage</h2>';
+  
+  if (sessionStorage.length === 0) {
+    html += '<p style="text-align: center; color: #999;">ไม่มีข้อมูลใน sessionStorage</p>';
+  } else {
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      const value = sessionStorage.getItem(key);
+      html += `
+        <div class="data-item">
+          <span class="data-label">${key}:</span>
+          <span class="data-value">${value}</span>
+        </div>
+      `;
+    }
+  }
+  
+  html += '</div>';
+  allDataDiv.innerHTML = html;
+}
+
+// ฟังก์ชันออกจากระบบ
+window.logout = function() {
+  if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+    sessionStorage.clear();
+    console.log("Logged out - Session cleared");
+    window.location.href = "login.html";
+  }
+}
+
+// เรียกใช้งานเมื่อโหลดหน้า
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Page loaded - Initializing...");
+  displaySessionData();
+  fetchFirebaseData();
+});
+
+</script>
+
+</body>
+</html>

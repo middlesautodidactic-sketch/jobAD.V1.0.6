@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard ระบบ AUTODIDACTIC (Admin)</title>
+
+  <!-- FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <style>
+    :root {
+      --red-600:#c72828;
+      --red-700:#9b1f1f;
+      --card-bg:#fff;
+      --muted:#666;
+    }
+
+    * { box-sizing:border-box }
+
+    body {
+      font-family:'Prompt', sans-serif;
+      margin:0; 
+      padding:0;
+      background:linear-gradient(to bottom,#fff,#fdeaea);
+      color:#111;
+    }
+
+    /* ===== Header ===== */
+    header {
+      background:linear-gradient(90deg,#c00,#f44336);
+      color:#fff;
+      padding:12px 20px;
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center;
+      flex-wrap:wrap;
+      position:sticky; 
+      top:0; 
+      z-index:10;
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .logo-title { 
+      display:flex; 
+      gap:12px; 
+      align-items:center; 
+    }
+
+    .logo-title img { 
+      width:50px; 
+      background:rgba(255,255,255,0.8); 
+      padding:5px; 
+      border-radius:8px; 
+    }
+
+    .nav-btn { 
+      color:#fff; 
+      background:rgba(0,0,0,0.2); 
+      padding:8px 12px; 
+      border-radius:8px; 
+      text-decoration:none; 
+      font-weight:700; 
+      transition:0.3s;
+    }
+
+    .nav-btn:hover { 
+      background:rgba(255,255,255,0.3); 
+    }
+
+    /* ===== Layout ===== */
+    main { 
+      max-width:1200px; 
+      margin:24px auto; 
+      padding:0 16px; 
+    }
+
+    .top-actions { 
+      margin-bottom:18px; 
+      display:flex; 
+      gap:12px; 
+      align-items:center; 
+      flex-wrap:wrap; 
+    }
+
+    .grid { 
+      display:grid; 
+      grid-template-columns:repeat(2,1fr); 
+      gap:18px; 
+    }
+
+    @media(max-width:880px) { 
+      .grid { grid-template-columns:1fr; } 
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background:var(--card-bg);
+      border-radius:12px;
+      padding:16px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+      border:2px solid rgba(199,40,40,0.08);
+    }
+
+    .card h3 { 
+      margin:0 0 12px 0; 
+      color:var(--red-600); 
+      font-size:18px; 
+    }
+
+    /* ===== Buttons ===== */
+    .btn {
+      background:var(--red-600); 
+      color:#fff; 
+      border:none;
+      padding:8px 14px; 
+      border-radius:10px; 
+      cursor:pointer;
+      font-weight:700; 
+      font-size:14px;
+      box-shadow:0 6px 14px rgba(0,0,0,0.1);
+      transition:0.2s;
+    }
+
+    .btn:hover { 
+      opacity:0.9; 
+      transform:translateY(-1px); 
+    }
+
+    .btn.danger { 
+      background:#ff5050; 
+    }
+
+    .btn.secondary { 
+      background:#555; 
+    }
+
+    /* ===== Text Styles ===== */
+    .small-muted { 
+      font-size:13px; 
+      color:#666; 
+    }
+
+    .tiny { 
+      font-size:12px; 
+      color:#444; 
+    }
+
+    .tiny2 { 
+      font-size:12px; 
+      color:#fff; 
+    }
+
+    /* ===== List Items ===== */
+    .list-item {
+      background:#fff6f6; 
+      border:1px solid rgba(199,40,40,0.12);
+      padding:10px; 
+      border-radius:8px; 
+      margin-bottom:10px;
+    }
+
+    .action-row { 
+      margin-top:8px; 
+      display:flex; 
+      gap:8px; 
+      flex-wrap:wrap; 
+    }
+
+    /* ===== Scrollable Lists ===== */
+    #eventListPending,
+    #eventListCompleted,
+    #leaveList,
+    #engineerList,
+    #salesList,
+    #managerList,
+    #adminList,
+    #workerList,
+    #assignerList {
+      max-height: 350px;
+      overflow-y: auto;
+      padding-right:6px;
+    }
+
+    #eventListPending::-webkit-scrollbar,
+    #eventListCompleted::-webkit-scrollbar,
+    #leaveList::-webkit-scrollbar,
+    #engineerList::-webkit-scrollbar,
+    #salesList::-webkit-scrollbar,
+    #managerList::-webkit-scrollbar,
+    #adminList::-webkit-scrollbar,
+    #workerList::-webkit-scrollbar,
+    #assignerList::-webkit-scrollbar {
+      width:6px; 
+    }
+
+    #eventListPending::-webkit-scrollbar-thumb,
+    #eventListCompleted::-webkit-scrollbar-thumb,
+    #leaveList::-webkit-scrollbar-thumb,
+    #engineerList::-webkit-scrollbar-thumb,
+    #salesList::-webkit-scrollbar-thumb,
+    #managerList::-webkit-scrollbar-thumb,
+    #adminList::-webkit-scrollbar-thumb,
+    #workerList::-webkit-scrollbar-thumb,
+    #assignerList::-webkit-scrollbar-thumb {
+      background:#c00; 
+      border-radius:4px;
+    }
+
+    #eventListPending::-webkit-scrollbar-track,
+    #eventListCompleted::-webkit-scrollbar-track,
+    #leaveList::-webkit-scrollbar-track,
+    #engineerList::-webkit-scrollbar-track,
+    #salesList::-webkit-scrollbar-track,
+    #managerList::-webkit-scrollbar-track,
+    #adminList::-webkit-scrollbar-track,
+    #workerList::-webkit-scrollbar-track,
+    #assignerList::-webkit-scrollbar-track {
+      background:#ffe5e5;
+    }
+
+    /* ===== Responsive Grid ===== */
+    @media(max-width:1024px) {
+      .card div[style*="grid-template-columns:repeat(4"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+
+    @media(max-width:640px) {
+      .card div[style*="grid-template-columns:repeat(4"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* ===== Inputs ===== */
+    input[type="text"], 
+    input[type="password"], 
+    select {
+      padding:8px 10px; 
+      border-radius:8px; 
+      border:1px solid #ddd;
+      font-size:14px;
+    }
+
+    .input-row { 
+      display:flex; 
+      gap:12px; 
+      flex-wrap:wrap; 
+      align-items:center; 
+      margin-bottom:12px; 
+    }
+
+    .input-row input { 
+      flex:1; 
+      min-width:200px; 
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      background:linear-gradient(90deg,#c00,#f44336);
+      color:#fff; 
+      padding:12px; 
+      text-align:center; 
+      margin-top:30px;
+      box-shadow:0 -3px 6px rgba(0,0,0,0.1);
+    }
+
+    /* ===== Calendar ===== */
+    #holidayCalendar { 
+      min-height:300px; 
+    }
+
+    /* ===== Debug Info ===== */
+    .debug-info {
+      background:#fffacd;
+      border:1px solid #ffd700;
+      padding:8px;
+      border-radius:6px;
+      font-size:11px;
+      margin-top:8px;
+      max-height:150px;
+      overflow-y:auto;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-title">
+    <img src="ad_logo-Photoroom.png" alt="logo" onerror="this.style.display='none'" />
+    <div>
+      <div style="font-weight:800; font-size:18px;">🛠 ระบบจัดการ AUTODIDACTIC (Admin)</div>
+      <div class="tiny2">Dashboard - จัดการงาน วันลา ผู้ใช้งาน รายชื่อ และวันหยุด</div>
+    </div>
+  </div>
+  <nav>
+    <a href="calendar_admin.html" class="nav-btn">กลับหน้าหลัก</a>
+  </nav>
+</header>
+
+<main>
+  <div class="top-actions">
+    <a href="calendar_admin.html" class="btn">← กลับ</a>
+    <a href="export-csv.html" class="btn secondary">⬇ Export CSV</a>
+    <button id="toggleDebug" class="btn secondary">🔍 Debug</button>
+    <div style="flex:1"></div>
+    <div class="small-muted">© 2025 AUTODIDACTIC</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- รายการงานกำลังดำเนินการ -->
+    <section class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0;">📋 รายการงาน (กำลังดำเนินการ)</h3>
+        <button onclick="printPendingEvents()" class="btn secondary">🖨️ ปริ้น</button>
+      </div>
+      <div id="eventListPending" class="small-muted">⏳ กำลังโหลด...</div>
+    </section>
+
+    <!-- รายการวันลา -->
+    <section class="card">
+      <h3>🏖 รายการวันลา</h3>
+      <div id="leaveList" class="small-muted">⏳ กำลังโหลด...</div>
+    </section>
+
+    <!-- รายการงานเรียบร้อย -->
+    <section class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0;">📋 รายการงาน (เรียบร้อย)</h3>
+        <button onclick="printCompletedEvents()" class="btn secondary">🖨️ ปริ้น</button>
+      </div>
+      <div id="eventListCompleted" class="small-muted">⏳ กำลังโหลด...</div>
+    </section>
+
+    <!-- ผู้ใช้งานระบบ -->
+    <section class="card" style="grid-column:1 / -1;">
+      <h3>👥 ผู้ใช้งานระบบ (Users)</h3>
+
+      <div class="input-row">
+        <input id="userName" type="text" placeholder="ชื่อผู้ใช้ (name)" style="flex:2;">
+        <input id="userUserId" type="text" placeholder="userId (ถ้าไม่ใส่ใช้ auto ID)" style="flex:1;">
+        <input id="userPassword" type="password" placeholder="รหัสผ่าน (password)" style="flex:1;">
+        <select id="userPosition" style="width:150px;">
+          <option value="">เลือกตำแหน่ง</option>
+          <option value="engineer">Engineer</option>
+          <option value="sales">Sales</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button id="addUserBtn" class="btn">➕ เพิ่มผู้ใช้</button>
+      </div>
+      <div class="tiny" style="margin-bottom:12px;">หากไม่ใส่ userId ระบบจะใช้ document ID เป็น userId อัตโนมัติ</div>
+
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:12px;">
+        <div>
+          <h4 class="small-muted">🔧 Engineer</h4>
+          <div id="engineerList">⏳ กำลังโหลด...</div>
+        </div>
+        <div>
+          <h4 class="small-muted">💼 Sales</h4>
+          <div id="salesList">⏳ กำลังโหลด...</div>
+        </div>
+        <div>
+          <h4 class="small-muted">👔 Manager</h4>
+          <div id="managerList">⏳ กำลังโหลด...</div>
+        </div>
+        <div>
+          <h4 class="small-muted">⚙️ Admin</h4>
+          <div id="adminList">⏳ กำลังโหลด...</div>
+        </div>
+      </div>
+    </section>
+    <!-- ปฏิทินวันหยุด -->
+    <section class="card" style="grid-column:1 / -1;">
+      <h3>🏢 ปฏิทินวันหยุดประจำบริษัท</h3>
+      <div id="holidayCalendar"></div>
+      <div class="tiny" style="margin-top:8px;">💡 คลิกวันที่เพื่อเพิ่มวันหยุด — คลิกเหตุการณ์เพื่อลบ</div>
+    </section>
+
+  </div>
+</main>
+
+<footer>© 2025 ระบบ AUTODIDACTIC — สงวนลิขสิทธิ์</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase, ref, get, set, push, remove, update, onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ---------------- Firebase Config ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyABY8jkjB2RD3RPK-qQ6kJThm32Pc9OpKE",
+  authDomain: "events-93cb9.firebaseapp.com",
+  databaseURL: "https://events-93cb9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "events-93cb9",
+  storageBucket: "events-93cb9.firebasestorage.app",
+  messagingSenderId: "234410411694",
+  appId: "1:234410411694:web:b544058bce0dfe78a88f3f",
+  measurementId: "G-4D3X216R1K"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const $ = id => document.getElementById(id);
+
+let debugMode = false;
+
+$("toggleDebug").onclick = () => {
+  debugMode = !debugMode;
+  $("workerDebug").style.display = debugMode ? "block" : "none";
+  $("assignerDebug").style.display = debugMode ? "block" : "none";
+  if (debugMode) loadWorkerAssignerFromUsers();
+};
+
+/* ---------------- Date Utils ---------------- */
+function formatDateThai(dateStr) {
+  if (!dateStr) return "-";
+  const [y, m, d] = dateStr.split("-");
+  return `${d}/${m}/${+y + 543}`;
+}
+
+/* ---------------- Ensure Default Data ---------------- */
+async function ensureDefaultDocs() {
+  try {
+    if (!(await get(ref(db, "Days/leaves"))).exists()) {
+      await push(ref(db, "Days/leaves"), {
+        name: "User A",
+        reason: "ประชุม",
+        start: "2025-01-10",
+        end: "2025-01-10"
+      });
+    }
+
+    if (!(await get(ref(db, "Days/holidays"))).exists()) {
+      await push(ref(db, "Days/holidays"), { 
+        name: "วันขึ้นปีใหม่", 
+        date: "2025-01-01" 
+      });
+    }
+
+    if (!(await get(ref(db, "events"))).exists()) {
+      await push(ref(db, "events"), {
+        jobNumber: "JOB-000",
+        location: "สำนักงานใหญ่",
+        start: "2025-01-01",
+        end: "2025-01-02",
+        status: "รออนุมัติ",
+        workers: ["User A"],
+        assigners: ["Admin"],
+        jobTypes: ["ทดสอบ"]
+      });
+    }
+  } catch (e) {
+    console.warn("ensureDefaultDocs error:", e);
+  }
+}
+
+/* ---------------- EVENTS ---------------- */
+let allEventsData = {};
+
+// เก็บข้อมูลงานทั้งหมดไว้สำหรับการปริ้น
+function loadEvents() {
+  const pending = $("eventListPending");
+  const completed = $("eventListCompleted");
+
+  onValue(ref(db, "events"), snap => {
+    pending.innerHTML = "";
+    completed.innerHTML = "";
+    allEventsData = {}; // เคลียร์ข้อมูลเก่า
+
+    if (!snap.exists()) {
+      pending.innerHTML = completed.innerHTML = "<i>ไม่มีข้อมูลงาน</i>";
+      return;
+    }
+
+    allEventsData = snap.val(); // เก็บข้อมูลทั้งหมด
+
+    Object.entries(snap.val()).forEach(([id, d]) => {
+      const div = document.createElement("div");
+      div.className = "list-item";
+      div.innerHTML = `
+        <b>${d.jobNumber || "-"}</b> - ${d.location || "-"}<br>
+        <span class="tiny">${formatDateThai(d.start)} → ${formatDateThai(d.end)}</span>
+        <div class="action-row">
+          <button class="btn" onclick="editEvent('${id}')">✏</button>
+          <button class="btn danger" onclick="deleteEvent('${id}')">🗑</button>
+          <button class="btn secondary" onclick="printSingleEvent('${id}')">🖨️</button>
+        </div>
+      `;
+      (["เรียบร้อย","ไม่เรียบร้อย"].includes(d.status)
+        ? completed
+        : pending).appendChild(div);
+    });
+  });
+}
+
+window.deleteEvent = id => {
+  if (confirm("ลบงานนี้?")) remove(ref(db, `events/${id}`));
+};
+
+window.editEvent = id => {
+  location.href = `edit.html?id=${id}`;
+};
+
+/* ---------------- LEAVES (Days/leaves) ---------------- */
+function loadLeaves() {
+  const box = $("leaveList");
+  onValue(ref(db, "Days/leaves"), snap => {
+    box.innerHTML = "";
+    if (!snap.exists()) {
+      box.innerHTML = "<i>ไม่มีข้อมูลวันลา</i>";
+      return;
+    }
+
+    Object.entries(snap.val()).forEach(([id, d]) => {
+      const div = document.createElement("div");
+      div.className = "list-item";
+      div.innerHTML = `
+        <b>${d.name}</b> (${d.reason})<br>
+        <span class="tiny">${formatDateThai(d.start)} → ${formatDateThai(d.end)}</span>
+        <div class="action-row">
+          <button class="btn" onclick="editLeave('${id}','${encodeURIComponent(d.name)}')">✏</button>
+          <button class="btn danger" onclick="deleteLeave('${id}')">🗑</button>
+        </div>
+      `;
+      box.appendChild(div);
+    });
+  });
+}
+
+window.deleteLeave = id => {
+  if (confirm("ลบวันลานี้?")) remove(ref(db, `Days/leaves/${id}`));
+};
+
+window.editLeave = (id, name) => {
+  location.href = `editLeave.html?id=${id}&name=${name}`;
+};
+
+/* ---------------- USERS ---------------- */
+function loadUsers() {
+  const boxes = {
+    engineer: $("engineerList"),
+    sales: $("salesList"),
+    manager: $("managerList"),
+    admin: $("adminList")
+  };
+
+  onValue(ref(db, "users"), snap => {
+    Object.values(boxes).forEach(b => b.innerHTML = "");
+    if (!snap.exists()) return;
+
+    Object.entries(snap.val()).forEach(([id, u]) => {
+      const div = document.createElement("div");
+      div.className = "list-item";
+      div.innerHTML = `
+        <b>${u.name}</b><br>
+        <span class="tiny">${u.userId}</span>
+        <div class="action-row">
+          <button class="btn danger" onclick="deleteUser('${id}')">🗑</button>
+        </div>
+      `;
+      boxes[u.position]?.appendChild(div);
+    });
+  });
+}
+
+window.deleteUser = id => {
+  if (confirm("ลบผู้ใช้?")) remove(ref(db, `users/${id}`));
+};
+
+$("addUserBtn").onclick = async () => {
+  const name = $("userName").value.trim();
+  const password = $("userPassword").value;
+  const position = $("userPosition").value;
+  let uid = $("userUserId").value.trim();
+
+  if (!name || !password || !position) return alert("กรอกข้อมูลให้ครบ");
+
+  const r = push(ref(db, "users"));  // ✅ บันทึกไปที่ users
+  await set(r, { name, password, position, userId: uid || r.key });
+
+  $("userName").value = $("userPassword").value = $("userUserId").value = "";
+  $("userPosition").value = "";
+};
+
+/* ---------------- WORKER/ASSIGNER LISTS (จาก users ตาม position) ---------------- */
+function loadWorkerAssignerFromUsers() {
+  const workerBox = $("workerList");  // ✅ เปลี่ยนจาก engineerList
+  const assignerBox = $("assignerList");  // ✅ เปลี่ยนจาก salesList
+  const workerDebugBox = $("workerDebug");  // ✅ เปลี่ยนจาก engineerDebug
+  const assignerDebugBox = $("assignerDebug");  // ✅ เปลี่ยนจาก salesDebug
+
+  onValue(ref(db, "users"), snap => {
+    console.log("=== Loading Worker/Assigner from users ===");
+    
+    workerBox.innerHTML = "";
+    assignerBox.innerHTML = "";
+    
+    if (debugMode) {
+      workerDebugBox.innerHTML = "<b>Debug Info:</b><br>";
+      assignerDebugBox.innerHTML = "<b>Debug Info:</b><br>";
+    }
+    
+    if (!snap.exists()) {
+      console.log("❌ No users found");
+      workerBox.innerHTML = assignerBox.innerHTML = "<i>ไม่มีข้อมูล users</i>";
+      return;
+    }
+
+    const users = snap.val();
+    console.log("📊 Total users found:", Object.keys(users).length);
+    
+    let engineerCount = 0;
+    let salesCount = 0;
+    const debugData = {
+      engineers: [],
+      sales: [],
+      other: []
+    };
+
+    Object.entries(users).forEach(([id, u]) => {
+      const positionValue = u.position || "";
+      const position = String(positionValue).toLowerCase().trim();
+      
+      console.log(`📝 User: ${u.name}`);
+      console.log(`   - Position value: "${positionValue}"`);
+      console.log(`   - Normalized: "${position}"`);
+      
+      if (position === "engineer") {
+        console.log(`   ✅ → ENGINEER`);
+        engineerCount++;
+        
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.innerHTML = `
+          <b>${u.name}</b><br>
+          <span class="tiny">Position: ${positionValue}</span>
+        `;
+        workerBox.appendChild(div);  // ✅ เปลี่ยนเป็น workerBox
+        
+        debugData.engineers.push(`${u.name} (${positionValue})`);
+      }
+      else if (position === "sales") {
+        console.log(`   ✅ → SALES`);
+        salesCount++;
+        
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.innerHTML = `
+          <b>${u.name}</b><br>
+          <span class="tiny">Position: ${positionValue}</span>
+        `;
+        assignerBox.appendChild(div);  // ✅ เปลี่ยนเป็น assignerBox
+        
+        debugData.sales.push(`${u.name} (${positionValue})`);
+      }
+      else {
+        console.log(`   ⚠️ → OTHER (not matched)`);
+        debugData.other.push(`${u.name} (position: "${positionValue}")`);
+      }
+    });
+
+    if (engineerCount === 0) {
+      workerBox.innerHTML = `<i>ไม่มี Engineers<br>(ต้องมี position = 'engineer')</i>`;
+    }
+    
+    if (salesCount === 0) {
+      assignerBox.innerHTML = `<i>ไม่มี Sales<br>(ต้องมี position = 'sales')</i>`;
+    }
+
+    if (debugMode) {
+      workerDebugBox.innerHTML += `
+        <b>Engineers found: ${engineerCount}</b><br>
+        ${debugData.engineers.length > 0 ? debugData.engineers.join("<br>") : "None"}<br><br>
+        <b>Other users (${debugData.other.length}):</b><br>
+        ${debugData.other.join("<br>")}
+      `;
+      
+      assignerDebugBox.innerHTML += `
+        <b>Sales found: ${salesCount}</b><br>
+        ${debugData.sales.length > 0 ? debugData.sales.join("<br>") : "None"}<br><br>
+        <b>Other users (${debugData.other.length}):</b><br>
+        ${debugData.other.join("<br>")}
+      `;
+    }
+    
+    console.log(`✅ Summary: ${engineerCount} engineers, ${salesCount} sales loaded`);
+    console.log(`Other users: ${debugData.other.length}`);
+  }, (error) => {
+    console.error("❌ Error loading users:", error);
+    workerBox.innerHTML = assignerBox.innerHTML = "<i>เกิดข้อผิดพลาดในการโหลดข้อมูล</i>";
+  });
+}
+
+/* ---------------- HOLIDAY CALENDAR (Days/holidays) ---------------- */
+let calendar;
+
+function initHolidayCalendar() {
+  const calendarEl = $("holidayCalendar");
+  
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'th',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,dayGridYear'
+    },
+    buttonText: {
+      today: 'วันนี้',
+      month: 'เดือน',
+      year: 'ปี'
+    },
+    
+    // คลิกวันเพื่อเพิ่มวันหยุด
+    dateClick: function(info) {
+      const holidayName = prompt("ชื่อวันหยุด:", "วันหยุดพิเศษ");
+      if (holidayName) {
+        addHoliday(holidayName, info.dateStr);
+      }
+    },
+    
+    // คลิกเหตุการณ์เพื่อลบวันหยุด
+    eventClick: function(info) {
+      if (confirm(`ลบวันหยุด "${info.event.title}"?`)) {
+        deleteHoliday(info.event.id);
+      }
+    },
+    
+    events: []
+  });
+
+  calendar.render();
+  loadHolidays();
+}
+
+function loadHolidays() {
+  onValue(ref(db, "Days/holidays"), snap => {
+    calendar.removeAllEvents();
+    
+    if (!snap.exists()) return;
+
+    Object.entries(snap.val()).forEach(([id, h]) => {
+      calendar.addEvent({
+        id: id,
+        title: h.name || "วันหยุด",
+        start: h.date,
+        allDay: true,
+        backgroundColor: '#ff5252',
+        borderColor: '#c00'
+      });
+    });
+  });
+}
+
+async function addHoliday(name, date) {
+  try {
+    await push(ref(db, "Days/holidays"), {
+      name: name,
+      date: date
+    });
+  } catch (e) {
+    alert("เกิดข้อผิดพลาด: " + e.message);
+  }
+}
+
+async function deleteHoliday(id) {
+  try {
+    await remove(ref(db, `Days/holidays/${id}`));
+  } catch (e) {
+    alert("เกิดข้อผิดพลาด: " + e.message);
+  }
+}
+
+/* ---------------- INITIALIZATION ---------------- */
+(async () => {
+  await ensureDefaultDocs();
+  loadEvents();
+  loadLeaves();
+  loadUsers();
+  loadWorkerAssignerFromUsers();
+  initHolidayCalendar();
+})();
+
+/* ---------------- PRINT FUNCTIONS ---------------- */
+window.printPendingEvents = () => {
+  const pendingEvents = Object.entries(allEventsData)
+    .filter(([_, d]) => !["เรียบร้อย","ไม่เรียบร้อย"].includes(d.status));
+  
+  // เก็บข้อมูลใน localStorage และไปหน้า reportS.html
+  localStorage.setItem('printData', JSON.stringify({
+    events: pendingEvents,
+    title: "รายการงาน (กำลังดำเนินการ)"
+  }));
+  window.open('reportS.html', '_blank');
+};
+
+window.printCompletedEvents = () => {
+  const completedEvents = Object.entries(allEventsData)
+    .filter(([_, d]) => ["เรียบร้อย","ไม่เรียบร้อย"].includes(d.status));
+  
+  // เก็บข้อมูลใน localStorage และไปหน้า reportS.html
+  localStorage.setItem('printData', JSON.stringify({
+    events: completedEvents,
+    title: "รายการงาน (เรียบร้อย)"
+  }));
+  window.open('reportS.html', '_blank');
+};
+
+/* ---------------- PRINT FUNCTIONS ---------------- */
+window.printPendingEvents = () => {
+  const pendingEvents = Object.entries(allEventsData)
+    .filter(([_, d]) => !["เรียบร้อย","ไม่เรียบร้อย"].includes(d.status));
+  
+  if (pendingEvents.length === 0) {
+    alert("ไม่มีข้อมูลสำหรับปริ้น");
+    return;
+  }
+  
+  // ส่งเฉพาะ jobNumber ไป
+  const jobNumbers = pendingEvents.map(([_, d]) => d.jobNumber).filter(Boolean).join(',');
+  window.open(`reportS.html?jobs=${encodeURIComponent(jobNumbers)}&title=${encodeURIComponent("รายการงาน (กำลังดำเนินการ)")}`, '_blank');
+};
+
+/* ---------------- PRINT FUNCTIONS ---------------- */
+window.printPendingEvents = () => {
+  const pendingEvents = Object.entries(allEventsData)
+    .filter(([_, d]) => !["เรียบร้อย","ไม่เรียบร้อย"].includes(d.status));
+  
+  if (pendingEvents.length === 0) {
+    alert("ไม่มีข้อมูลสำหรับปริ้น");
+    return;
+  }
+  
+  // สร้าง URL parameters สำหรับแต่ละงาน
+  const params = pendingEvents.map(([_, d]) => 
+    `job=${encodeURIComponent(d.jobNumber || '')}&start=${encodeURIComponent(d.start || '')}&end=${encodeURIComponent(d.end || '')}`
+  ).join('&');
+  
+  window.open(`reportS.html?${params}&title=${encodeURIComponent("รายการงาน (กำลังดำเนินการ)")}`, '_blank');
+};
+
+window.printCompletedEvents = () => {
+  const completedEvents = Object.entries(allEventsData)
+    .filter(([_, d]) => ["เรียบร้อย","ไม่เรียบร้อย"].includes(d.status));
+  
+  if (completedEvents.length === 0) {
+    alert("ไม่มีข้อมูลสำหรับปริ้น");
+    return;
+  }
+  
+  // สร้าง URL parameters สำหรับแต่ละงาน
+  const params = completedEvents.map(([_, d]) => 
+    `job=${encodeURIComponent(d.jobNumber || '')}&start=${encodeURIComponent(d.start || '')}&end=${encodeURIComponent(d.end || '')}`
+  ).join('&');
+  
+  window.open(`reportS.html?${params}&title=${encodeURIComponent("รายการงาน (เรียบร้อย)")}`, '_blank');
+};
+
+// ฟังก์ชันปริ้นงานเดียว
+window.printSingleEvent = (eventId) => {
+  if (!allEventsData[eventId]) {
+    alert("ไม่พบข้อมูลงาน");
+    return;
+  }
+  
+  const event = allEventsData[eventId];
+  
+  // ส่ง job, start, end ไป
+  const params = `job=${encodeURIComponent(event.jobNumber || '')}&start=${encodeURIComponent(event.start || '')}&end=${encodeURIComponent(event.end || '')}`;
+  
+  window.open(`reportS.html?${params}&title=${encodeURIComponent(`รายละเอียดงาน - ${event.jobNumber || "ไม่ระบุ"}`)}`, '_blank');
+};
+</script>
+
+</body>
+</html>
